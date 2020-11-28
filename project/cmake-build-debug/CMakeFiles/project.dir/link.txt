@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/project.dir/src/data_base.cpp.o  -o project 
