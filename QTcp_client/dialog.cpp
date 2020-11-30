@@ -85,7 +85,6 @@ void Dialog::on_pbt_Send_clicked() {
 void Dialog::onSokConnected() {
     ui->pbConnect->setEnabled(false);
     ui->pbDisconnect->setEnabled(true);
-    _blockSize = 0;
     AddToLog("Connected to"+_sok->peerAddress().toString()+":"+QString::number(_sok->peerPort()),Qt::green);
 
     Disable_buttons(true, false);

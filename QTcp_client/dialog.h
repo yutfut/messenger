@@ -6,8 +6,6 @@
 #include <QHostAddress>
 #include <QMessageBox>
 
-class MyClient;
-
 namespace Ui {
     class Dialog;
 }
@@ -31,21 +29,17 @@ private slots:
 
     void on_pbConnect_clicked();
     void on_pbDisconnect_clicked();
-
-    void display_message(const QString &str);
-    void Display_error(const QString &error);
-    void Disable_buttons(const bool state_1, const bool state_2 = true);
-
     void on_pbt_Send_clicked();
-
     void on_message_Edit_textEdited(const QString &arg1);
 
 private:
     Ui::Dialog *ui;
     QTcpSocket *_sok;
-    quint16 _blockSize;
-    QString _name;
     void AddToLog(QString text, QColor color = Qt::black);
+
+    void display_message(const QString &str);
+    void Display_error(const QString &error);
+    void Disable_buttons(const bool state_1, const bool state_2 = true);
 
 };
 
