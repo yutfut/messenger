@@ -15,36 +15,71 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <layout class="QGridLayout" name="gridLayout_2"/>
+   </item>
+   <item>
+    <widget class="QTextBrowser" name="lwLog"/>
+   </item>
+   <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="2">
-      <widget class="QListWidget" name="lwLog">
-       <property name="resizeMode">
-        <enum>QListView::Adjust</enum>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="pbConnect">
+       <property name="text">
+        <string>Подключиться</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Адрес хоста</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="leHost">
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string/>
+        <string>Введите сообщение</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Порт хоста</string>
        </property>
       </widget>
      </item>
+     <item row="3" column="2">
+      <widget class="QPushButton" name="pbt_Send">
+       <property name="text">
+        <string>Отправить сообщение</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QPushButton" name="pbDisconnect">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Отключиться</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
+      <widget class="QLineEdit" name="message_Edit"/>
+     </item>
+     <item row="1" column="1">
       <widget class="QSpinBox" name="sbPort">
        <property name="maximum">
         <number>65536</number>
@@ -54,24 +89,10 @@
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="pbConnect">
-       <property name="text">
-        <string>Подключиться</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
-      <widget class="QPushButton" name="pbDisconnect">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
+      <widget class="QLineEdit" name="leHost">
        <property name="text">
-        <string>Отключиться</string>
+        <string/>
        </property>
       </widget>
      </item>

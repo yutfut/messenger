@@ -20,6 +20,9 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
+signals:
+    void newMessage(QString);
+
 private slots:
     void onSokConnected();
     void onSokDisconnected();
@@ -28,6 +31,14 @@ private slots:
 
     void on_pbConnect_clicked();
     void on_pbDisconnect_clicked();
+
+    void display_message(const QString &str);
+    void Display_error(const QString &error);
+    void Disable_buttons(const bool state_1, const bool state_2 = true);
+
+    void on_pbt_Send_clicked();
+
+    void on_message_Edit_textEdited(const QString &arg1);
 
 private:
     Ui::Dialog *ui;
