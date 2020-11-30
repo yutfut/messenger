@@ -75,14 +75,10 @@ void Dialog::on_pbt_Send_clicked() {
             Disable_buttons(true, false);
 
         } else {
-            QString error = "Socket can't send message\n";
-            AddToLog(error, Qt::red);
-            QMessageBox::critical(this, "Error", error);
+            Display_error("Socket can't send message");
         }
     } else {
-        QString error = "Socket can't connect to server\n";
-        AddToLog(error, Qt::red);
-        QMessageBox::critical(this, "Error", error);
+        Display_error("Socket can't connect to server");
     }
 }
 
