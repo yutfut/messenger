@@ -103,7 +103,7 @@ void Dialog::onSokDisconnected() {
 }
 
 void Dialog::on_pbConnect_clicked() {
-    _sok->connectToHost(ui->leHost->text(), ui->sbPort->value());
+    _sok->connectToHost(ui->leHost->text(), ui->sbPort->text().toInt());
 }
 
 void Dialog::on_pbDisconnect_clicked() {
