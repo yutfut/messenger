@@ -59,14 +59,12 @@ std::vector<Dialog> DialogManagerMap::get_dialog (idType user_id, idType address
             dialogues.push_back(massive_dlg[i]);
         }
     }
-    std::cout << dialogues.size();
     return dialogues;
 }
 
 // MESSAGES
 
-Message MessageManagerMap::create_message(idType dialog_id, idType sender_id, std::string text, timeType time) {
-    Message message1 = {id, sender_id, dialog_id, text, time};
+Message MessageManagerMap::post_message(const Message& message1) {
     massive_messages.push_back(message1);
     id++;
     return message1;

@@ -39,8 +39,8 @@ struct dialogue_members {
 class IMessageManager {
 public:
     virtual std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, size_t limit) = 0;
-    // virtual Message Post_message (const Message& message1) = 0; // not understand for what it need help
-    virtual Message create_message(idType dialog_id, idType sender_id, std::string text, timeType time) = 0;
+    virtual Message post_message (const Message& message1) = 0;
+    // virtual Message create_message(idType dialog_id, idType sender_id, std::string text, timeType time) = 0;
 };
 
 class IUserManager {
@@ -61,7 +61,8 @@ public:
 class DialogManagerMap : public IDialogManager {
 public:
     idType check_dialog_creation(idType user_id, idType address_id) override;
-    std::vector<Dialog> get_dialog (idType user_id, idType address_id, idType last_dlg_id, size_t limit) override;
+    std::vector<Dialog> get_dialog (idType user_id, idType address_id, idType last_dlg_id, size_t limit) override; // delete address_id
+    // solve why we need members_dialog_id vector pair
 private:
     std::vector<std::pair<idType, idType>> members_dlg_id; // vector Dialog members id
     std::vector<Dialog> massive_dlg;
@@ -84,7 +85,8 @@ private:
 
 class MessageManagerMap : public IMessageManager {
 public:
-    Message create_message(idType dialog_id, idType sender_id, std::string text, timeType time) override;
+    Message post_message(const Message& message1) override;
+    // Message post_message(idType dialog_id, idType sender_id, std::string text, timeType time) override;
     std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, size_t limit) override;
 private:
     idType id = 1;
