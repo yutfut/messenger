@@ -10,6 +10,7 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     Disable_buttons(true);
 
     _sok = new QTcpSocket(this);
+    is_button_clicked = false;
 
     connect(this, &Dialog::newMessage, this, &Dialog::display_message);
     connect(_sok, &QTcpSocket::readyRead, this, &Dialog::onSokReadyRead);
@@ -40,23 +41,25 @@ void Dialog::onSokDisplayError(QAbstractSocket::SocketError socketError) {
 }
 
 void Dialog::onSokReadyRead() {
-    QByteArray buffer;
+    if (is_button_clicked) {
+        is_button_clicked = false;
+        QByteArray buffer;
 
-    QDataStream sock_stream(_sok);
-    sock_stream.setVersion(QDataStream::Qt_5_15);
+        QDataStream sock_stream(_sok);
+        sock_stream.setVersion(QDataStream::Qt_5_15);
 
-    sock_stream.startTransaction();
-    sock_stream >> buffer;
+        sock_stream.startTransaction();
+        sock_stream >> buffer;
 
-    if (!sock_stream.commitTransaction()) {
-        QString message = QString("%1 : No messages in server").arg(_sok->socketDescriptor());
+        if (!sock_stream.commitTransaction()) {
+            QString message = QString("%1 : No messages in server").arg(_sok->socketDescriptor());
+            emit newMessage(message);
+            return;
+        }
+
+        QString message = QString("%1 ").arg(QString::fromStdString(buffer.toStdString()));
         emit newMessage(message);
-        return;
     }
-
-    QString message = QString("%1 ").arg(QString::fromStdString(buffer.toStdString()));
-    emit newMessage(message);
-
     return;
     //  Скоро здесь будет расписывание процесса получение письма (исходя из протокола)
 }
@@ -64,6 +67,7 @@ void Dialog::onSokReadyRead() {
 void Dialog::on_pbt_Send_clicked() {
     if (_sok) {
         if (_sok->isOpen()) {
+            is_button_clicked = true;
             qDebug() << "Message: " << ui->message_Edit->text();
 
             QDataStream socket_stream(_sok);

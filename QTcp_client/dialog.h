@@ -35,6 +35,8 @@ private slots:
 private:
     Ui::Dialog *ui;
     QTcpSocket *_sok;
+    bool is_button_clicked;
+
     void AddToLog(QString text, QColor color = Qt::black);
 
     void display_message(const QString &str);
