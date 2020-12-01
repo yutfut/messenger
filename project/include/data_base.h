@@ -7,7 +7,9 @@
 
 typedef int idType;
 typedef std::string timeType;
+
 /*struct Message_content { std::string text; };*/
+
 struct User {
     idType id;
     std::string name;
@@ -37,7 +39,7 @@ struct dialogue_members {
 class IMessageManager {
 public:
     virtual std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, size_t limit) = 0;
-    // virtual Message Post_message (const Message& message1) = 0;
+    // virtual Message Post_message (const Message& message1) = 0; // not understand for what it need help
     virtual Message create_message(idType dialog_id, idType sender_id, std::string text, timeType time) = 0;
 };
 
