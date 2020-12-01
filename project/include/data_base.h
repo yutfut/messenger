@@ -1,80 +1,91 @@
 #ifndef PROJECT_DATA_BASE_H
 #define PROJECT_DATA_BASE_H
 #include <vector>
+#include <string>
 
-typedef int id_type_t;
+// Types and structures
 
-struct Message_content {
-    std::string text;
-};
-
-struct user {
-    id_type_t id;
+typedef int idType;
+typedef std::string timeType;
+/*struct Message_content { std::string text; };*/
+struct User {
+    idType id;
     std::string name;
     std::string login;
 };
 
-struct message {
-    id_type_t id;
-    id_type_t sender_id;
-    id_type_t dialog_id;
-    Message_content content;
-    time_t time;
+struct Message {
+    idType id;
+    idType sender_id;
+    idType dialog_id;
+    std::string text; // Message_content content;
+    timeType time;
 };
 
-struct dialog {
-    id_type_t id;
+struct Dialog {
+    idType id;
 };
 
 struct dialogue_members {
-    id_type_t id;
-    id_type_t  dialog_id;
-    id_type_t member_id;
+    idType id;
+    idType  dialog_id;
+    idType member_id;
 };
+
 // Interface
 
-class I_msg_manager {
+class IMessageManager {
 public:
-    virtual std::vector<message> get_messages (id_type_t dialog_id, id_type_t last_msg_id, size_t limit) = 0;
-    virtual message Post_message (const message& message1) = 0;
+    virtual std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, size_t limit) = 0;
+    // virtual Message Post_message (const Message& message1) = 0;
+    virtual Message create_message(idType dialog_id, idType sender_id, std::string text, timeType time) = 0;
 };
 
-class I_user_manager {
+class IUserManager {
 public:
-    virtual user get_user (const std::string& login) = 0;
-    virtual user get_user (id_type_t id) = 0;
-    virtual user get_user (std::string &name) = 0;
+    virtual User get_user (const std::string& login) = 0;
+    virtual idType get_user_id (const std::string& login) = 0;
+    virtual User create_user (const std::string& name, const std::string& login) = 0;
 };
 
-class I_dlg_manager {
+class IDialogManager {
 public:
-    virtual std::vector<dialog> get_dialog(id_type_t user_id, id_type_t address_id, id_type_t last_dlg_id, size_t limit) = 0;
+    virtual std::vector<Dialog> get_dialog(idType user_id, idType address_id, idType last_dlg_id, size_t limit) = 0;
+    virtual idType check_dialog_creation(idType user_id, idType address_id) = 0;
 };
 
-class Dialog_manager_map : public I_dlg_manager {
+// DIALOGUES
+
+class DialogManagerMap : public IDialogManager {
 public:
-    id_type_t check_dialog_creation(id_type_t user_id, id_type_t address_id);
-    id_type_t get_dialog_id (id_type_t user_id, id_type_t address_id);
-    std::vector<dialog> get_dialog (id_type_t user_id, id_type_t address_id, id_type_t last_dlg_id, size_t limit) override;
+    idType check_dialog_creation(idType user_id, idType address_id) override;
+    std::vector<Dialog> get_dialog (idType user_id, idType address_id, idType last_dlg_id, size_t limit) override;
 private:
-    std::vector<std::pair<id_type_t, id_type_t>> members_dlg_id; // vector dialog members id
-    std::vector<dialog> massive_dlg;
-    id_type_t dialog_id;
+    std::vector<std::pair<idType, idType>> members_dlg_id; // vector Dialog members id
+    std::vector<Dialog> massive_dlg;
+    idType dialog_id = 1;
 };
 
-class User_manager_map : public I_user_manager {
+// USERS
+
+class UserManagerMap : public IUserManager {
 public:
-    user get_user (const std::string& login) override;
-    user get_user (id_type_t id) override;
+    User get_user (const std::string& login) override;
+    User create_user (const std::string& name,const std::string& login) override;
+    idType get_user_id (const std::string& login) override;
 private:
-    std::vector<user> massive_users;
+    std::vector<User> massive_users;
+    idType id = 1;
 };
 
-class Message_manager_map : public I_msg_manager {
+// MESSAGES
+
+class MessageManagerMap : public IMessageManager {
 public:
-    message create_message(message& message1);
-    std::vector<message> get_messages (id_type_t dialog_id, id_type_t last_msg_id, size_t limit) override;
+    Message create_message(idType dialog_id, idType sender_id, std::string text, timeType time) override;
+    std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, size_t limit) override;
 private:
-    std::vector<message> massive_messages;
+    idType id = 1;
+    std::vector<Message> massive_messages;
 };
 #endif //PROJECT_DATA_BASE_H
