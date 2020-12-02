@@ -1,3 +1,0 @@
-/Users/yut_fut/Desktop/messenger/cpp_server/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/yut_fut/Desktop/messenger/cpp_server/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/yut_fut/Desktop/messenger/cpp_server/cmake-build-debug/CMakeFiles/server.dir
