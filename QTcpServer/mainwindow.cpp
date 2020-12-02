@@ -18,7 +18,7 @@ void MainWindow::on_starting_clicked()
 {
     tcpServer = new QTcpServer(this);
     connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newuser()));
-    if (!tcpServer->listen(QHostAddress::Any, 33333) && server_status==0) {
+    if (!tcpServer->listen(QHostAddress::Any, 1234) && server_status==0) {
         qDebug() <<  QObject::tr("Unable to start the server: %1.").arg(tcpServer->errorString());
         ui->textinfo->append(tcpServer->errorString());
     } else {
@@ -64,16 +64,20 @@ void MainWindow::slotReadClient()
     QTcpSocket* clientSocket = (QTcpSocket*)sender();
     int idusersocs=clientSocket->socketDescriptor();
 
+    QString messege;
+        QDataStream in(clientSocket);
+        in.setVersion(QDataStream::Qt_5_15);
+        in >> messege;
+
     QTextStream os(clientSocket);
     os.setAutoDetectUnicode(true);
-    os << "HTTP/1.0 200 Ok\r\n"
-          "Content-Type: text/html; charset=\"utf-8\"\r\n"
-          "\r\n"
-          "<h1>Nothing to see here</h1>\n"
-          << QDateTime::currentDateTime().toString() << "\n";
-    ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+clientSocket->readAll()+"\n\r");
-    // Если нужно закрыть сокет
-    clientSocket->close();
+    os << "HTTP/1.0 200 Ok\t" << QDateTime::currentDateTime().toString()+"\t"+messege+"\n";
+    ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messege+"\n");
+    if (!QString::compare(messege, "exit", Qt::CaseInsensitive)) {// Если нужно закрыть сокет
+        clientSocket->close();
+        qDebug() << QString::fromUtf8("Клиент отключился!");
+        ui->textinfo->append(QString::fromUtf8("Клиент отключился!"));
+    }
     SClients.remove(idusersocs);
 }
 
