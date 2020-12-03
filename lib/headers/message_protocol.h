@@ -18,7 +18,7 @@ public:
     MessageProtocol(QString &protocolMessage);
 
 //    Геттеры
-    [[nodiscard]] size_t GetDialogId() const;
+    [[nodiscard]] size_t getDialogId() const;
     [[nodiscard]] QString getNickname() const;
     [[nodiscard]] QString getUser() const;
     [[nodiscard]] QString getMessage() const;

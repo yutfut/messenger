@@ -23,7 +23,7 @@ MessageProtocol::MessageProtocol(QString &protocolMessage) {
     lengthUser = user.size();
 }
 
-size_t MessageProtocol::GetDialogId() const {
+size_t MessageProtocol::getDialogId() const {
     return dialogId;
 }
 

@@ -8,18 +8,21 @@
 Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     ui->setupUi(this);
 
-    Disable_buttons(true);
+    disableButtons(true);
 
-    _sok = new QTcpSocket(this);
-    is_button_clicked = false;
+    socket = new QTcpSocket(this);
+    isButtonClicked = false;
 
-    connect(_sok, &QTcpSocket::readyRead, this, &Dialog::onSokReadyRead);
-    connect(_sok, &QTcpSocket::connected, this, &Dialog::onSokConnected);
-    connect(_sok, &QTcpSocket::disconnected, this, &Dialog::onSokDisconnected);
-    connect(_sok, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(onSokDisplayError(QAbstractSocket::SocketError)));
+    connect(socket, &QTcpSocket::readyRead, this, &Dialog::onSokReadyRead);
+    connect(socket, &QTcpSocket::connected, this, &Dialog::onSokConnected);
+    connect(socket, &QTcpSocket::disconnected, this, &Dialog::onSokDisconnected);
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(onSokDisplayError(QAbstractSocket::SocketError)));
 }
 
 Dialog::~Dialog() {
+    socket->close();
+
+    delete socket;
     delete ui;
 }
 
@@ -28,113 +31,113 @@ void Dialog::onSokDisplayError(QAbstractSocket::SocketError socketError) {
     case QAbstractSocket::RemoteHostClosedError:
         break;
     case QAbstractSocket::HostNotFoundError: {
-        Display_error("The host was not found");
+        displayError("The host was not found");
         break;
     }
     case QAbstractSocket::ConnectionRefusedError: {
-        Display_error("The connection was refused by the peer");
+        displayError("The connection was refused by the peer");
         break;
     }
     default:
-        Display_error("The following error occured: " + _sok->errorString());
+        displayError("The following error occured: " + socket->errorString());
     }
 }
 
 void Dialog::onSokReadyRead() {
-    if (is_button_clicked) {
-        is_button_clicked = false;
+    if (isButtonClicked) {
+        isButtonClicked = false;
         QString buffer;
 
-        QDataStream sock_stream(_sok);
+        QDataStream sock_stream(socket);
         sock_stream.setVersion(QDataStream::Qt_5_15);
 
         sock_stream.startTransaction();
         sock_stream >> buffer;
 
         if (!sock_stream.commitTransaction()) {
-            QString message = QString("%1 : No messages in server").arg(_sok->socketDescriptor());
-            AddToLog(message, Qt::blue);
+            QString message = QString("%1 : No messages in server").arg(socket->socketDescriptor());
+            addToLog(message, Qt::blue);
             return;
         }
 
         MessageProtocol message(buffer);
         if (message.isValid()) {
-            AddToLog(message.getUser() + ": " + message.getMessage(), Qt::blue);
+            addToLog(message.getUser() + ": " + message.getMessage(), Qt::blue);
         } else {
-            Display_error("Incorrect Data!!!");
+            displayError("Incorrect Data!!!");
         }
     }
     return;
 }
 
 void Dialog::on_pbt_Send_clicked() {
-    if (_sok) {
-        if (_sok->isOpen()) {
-            is_button_clicked = true;
+    if (socket) {
+        if (socket->isOpen()) {
+            isButtonClicked = true;
 
-            QDataStream socket_stream(_sok);
-            socket_stream.setVersion(QDataStream::Qt_5_15);
+            QDataStream socketStream(socket);
+            socketStream.setVersion(QDataStream::Qt_5_15);
 
             QString textFromInput = ui->message_Edit->text();
 
-            // Это всего лишь пример, пока авторизации нет
-            MessageProtocol message(1, "@busartem", "Artemida", textFromInput);
+            // Это всего лишь пример, пока авторизация не сделана
+            MessageProtocol message(1, "@borodulinartm", "Artem", textFromInput);
 
             if (message.isValid()) {
                 QString messageTosent;
 
                 message.convert(messageTosent);
-                socket_stream << messageTosent;
+                socketStream << messageTosent;
             } else {
-                Display_error("Incorrect Data!!!");
+                displayError("Incorrect Data!!!");
             }
 
             ui->message_Edit->clear();
-            Disable_buttons(true, false);
+            disableButtons(true, false);
 
         } else {
-            Display_error("Socket can't send message");
+            displayError("Socket can't send message");
         }
     } else {
-        Display_error("Socket can't connect to server");
+        displayError("Socket can't connect to server");
     }
 }
 
 void Dialog::onSokConnected() {
     ui->pbConnect->setEnabled(false);
     ui->pbDisconnect->setEnabled(true);
-    AddToLog("Connected to"+_sok->peerAddress().toString()+":"+QString::number(_sok->peerPort()),Qt::green);
+    addToLog("Connected to"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),Qt::green);
 
-    Disable_buttons(true, false);
+    disableButtons(true, false);
 }
 
 void Dialog::onSokDisconnected() {
     ui->pbConnect->setEnabled(true);
     ui->pbDisconnect->setEnabled(false);
-    AddToLog("Disconnected from"+_sok->peerAddress().toString()+":"+QString::number(_sok->peerPort()), Qt::green);
+    addToLog("Disconnected from"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()), Qt::green);
 
-    Disable_buttons(true);
+    disableButtons(true);
 }
 
 void Dialog::on_pbConnect_clicked() {
-    _sok->connectToHost(ui->leHost->text(), ui->sbPort->text().toInt());
+    socket->connectToHost(ui->leHost->text(), ui->sbPort->text().toInt());
 }
 
 void Dialog::on_pbDisconnect_clicked() {
-    _sok->disconnectFromHost();
+    socket->disconnectFromHost();
 }
 
-void Dialog::Display_error(const QString &error) {
-    AddToLog(error, Qt::red);
+void Dialog::displayError(const QString &error) {
+    addToLog(error, Qt::red);
     QMessageBox::critical(this, "Client error!", error);
 }
 
-void Dialog::Disable_buttons(const bool state, const bool state_2) {
+void Dialog::disableButtons(const bool state, const bool state_2) {
     ui->pbt_Send->setDisabled(state);
     ui->message_Edit->setDisabled(state_2);
 }
 
-void Dialog::AddToLog(QString text, QColor color) {
+void Dialog::addToLog(QString text, QColor color) {
     QString message = QString(QTime::currentTime().toString() + " " + text);
 
     ui->lwLog->setTextColor(color);
@@ -143,7 +146,7 @@ void Dialog::AddToLog(QString text, QColor color) {
 
 void Dialog::on_message_Edit_textEdited(const QString &arg1) {
     if (arg1.length()) {
-        Disable_buttons(false, false);
+        disableButtons(false, false);
     } else {
         ui->pbt_Send->setDisabled(true);
     }
