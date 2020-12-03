@@ -62,7 +62,7 @@ void Dialog::onSokReadyRead() {
 
         MessageProtocol message(buffer);
         if (message.isValid()) {
-            addToLog(message.getUser() + ": " + message.getMessage(), Qt::blue);
+            addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
         } else {
             displayError("Incorrect Data!!!");
         }
@@ -81,7 +81,7 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-            MessageProtocol message(1, "@borodulinartm", "Artem", textFromInput);
+            MessageProtocol message(1, "@borodulinartm", "Artem", "@yut_fut", "Sergey", textFromInput);
 
             if (message.isValid()) {
                 QString messageTosent;
