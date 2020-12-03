@@ -12,8 +12,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+        ../lib/src/message_protocol.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+            ../lib/header/message_protocol.h
 
 FORMS    += mainwindow.ui

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtNetwork>
 #include <QTcpSocket>
+#include <QTcpServer>
 #include <QObject>
 #include <QByteArray>
 #include <QDebug>
@@ -30,7 +31,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QTcpServer *tcpServer;
+    QTcpSocket *_sok, *clientSocket;
+    QTcpServer *tcp_Server;
     int server_status;
     QMap<int,QTcpSocket *> SClients;
 };
