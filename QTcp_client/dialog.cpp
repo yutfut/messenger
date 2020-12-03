@@ -1,5 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
+#include "message_protocol.h"
 
 #include <QtGui>
 #include <QDebug>
@@ -12,7 +13,6 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     _sok = new QTcpSocket(this);
     is_button_clicked = false;
 
-    connect(this, &Dialog::newMessage, this, &Dialog::display_message);
     connect(_sok, &QTcpSocket::readyRead, this, &Dialog::onSokReadyRead);
     connect(_sok, &QTcpSocket::connected, this, &Dialog::onSokConnected);
     connect(_sok, &QTcpSocket::disconnected, this, &Dialog::onSokDisconnected);
@@ -43,7 +43,7 @@ void Dialog::onSokDisplayError(QAbstractSocket::SocketError socketError) {
 void Dialog::onSokReadyRead() {
     if (is_button_clicked) {
         is_button_clicked = false;
-        QByteArray buffer;
+        QString buffer;
 
         QDataStream sock_stream(_sok);
         sock_stream.setVersion(QDataStream::Qt_5_15);
@@ -53,27 +53,41 @@ void Dialog::onSokReadyRead() {
 
         if (!sock_stream.commitTransaction()) {
             QString message = QString("%1 : No messages in server").arg(_sok->socketDescriptor());
-            emit newMessage(message);
+            AddToLog(message, Qt::blue);
             return;
         }
 
-        QString message = QString("%1 ").arg(QString::fromStdString(buffer.toStdString()));
-        emit newMessage(message);
+        MessageProtocol message(buffer);
+        if (message.isValid()) {
+            AddToLog(message.getUser() + ": " + message.getMessage(), Qt::blue);
+        } else {
+            Display_error("Incorrect Data!!!");
+        }
     }
     return;
-    //  Скоро здесь будет расписывание процесса получение письма (исходя из протокола)
 }
 
 void Dialog::on_pbt_Send_clicked() {
     if (_sok) {
         if (_sok->isOpen()) {
             is_button_clicked = true;
-            qDebug() << "Message: " << ui->message_Edit->text();
 
             QDataStream socket_stream(_sok);
             socket_stream.setVersion(QDataStream::Qt_5_15);
 
-            socket_stream << ui->message_Edit->text();
+            QString textFromInput = ui->message_Edit->text();
+
+            // Это всего лишь пример, пока авторизации нет
+            MessageProtocol message(1, "@busartem", "Artemida", textFromInput);
+
+            if (message.isValid()) {
+                QString messageTosent;
+
+                message.convert(messageTosent);
+                socket_stream << messageTosent;
+            } else {
+                Display_error("Incorrect Data!!!");
+            }
 
             ui->message_Edit->clear();
             Disable_buttons(true, false);
@@ -108,12 +122,6 @@ void Dialog::on_pbConnect_clicked() {
 
 void Dialog::on_pbDisconnect_clicked() {
     _sok->disconnectFromHost();
-}
-
-void Dialog::display_message(const QString &str) {
-    qDebug() << str;
-    AddToLog("Message!!! " + _sok->peerAddress().toString() + ":" + QString::number(_sok->peerPort()), Qt::blue);
-    AddToLog(str, Qt::blue);
 }
 
 void Dialog::Display_error(const QString &error) {

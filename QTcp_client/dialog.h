@@ -1,6 +1,8 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
+#include "message_protocol.h"
+
 #include <QDialog>
 #include <QTcpSocket>
 #include <QHostAddress>
@@ -37,9 +39,7 @@ private:
     QTcpSocket *_sok;
     bool is_button_clicked;
 
-    void AddToLog(QString text, QColor color = Qt::black);
-
-    void display_message(const QString &str);
+    void AddToLog(QString text, QColor color = Qt::black);    
     void Display_error(const QString &error);
     void Disable_buttons(const bool state_1, const bool state_2 = true);
 
