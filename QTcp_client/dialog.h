@@ -1,7 +1,7 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-#include "message_protocol.h"
+#include "../lib/headers/message_protocol.h"
 
 #include <QDialog>
 #include <QTcpSocket>

@@ -1,6 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
-#include "message_protocol.h"
+#include "../lib/headers/message_protocol.h"
 
 #include <QtGui>
 #include <QDebug>

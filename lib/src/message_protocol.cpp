@@ -1,4 +1,4 @@
-#include "message_protocol.h"
+#include "../headers/message_protocol.h"
 
 MessageProtocol::MessageProtocol(const size_t &dialogId, const QString &nickname, const QString &user,
      const QString &message):dialogId(dialogId), nickname(nickname), user(user), message(message),
