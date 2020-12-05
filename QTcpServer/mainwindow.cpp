@@ -25,6 +25,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_starting_clicked()
 {
     connect(tcp_Server, SIGNAL(newConnection()), this, SLOT(newuser()));
+
     if (!tcp_Server->listen(QHostAddress::Any, 1234) && server_status==0) {
         qDebug() <<  QObject::tr("Unable to start the server: %1.").arg(tcp_Server->errorString());
         ui->textinfo->append(tcp_Server->errorString());
@@ -39,12 +40,12 @@ void MainWindow::on_starting_clicked()
 void MainWindow::on_stoping_clicked()
 {
     if(server_status==1){
-        foreach(int i,SClients.keys()){
-            QTextStream os(SClients[i]);
+        for(int i = 0; i < SClients.size(); ++i){
+            QTextStream os(SClients[i].clientSocket);
             os.setAutoDetectUnicode(true);
             os << QDateTime::currentDateTime().toString() << "\n";
-            SClients[i]->close();
-            SClients.remove(i);
+            SClients[i].clientSocket->close();
+            SClients.removeAt(i);
         }
         tcp_Server->close();
         ui->textinfo->append(QString::fromUtf8("Сервер остановлен!"));
@@ -61,41 +62,61 @@ void MainWindow::newuser()
         ui->textinfo->append(QString::fromUtf8("У нас новое соединение!"));
         QTcpSocket* clientSocket=tcp_Server->nextPendingConnection();
         int idusersocs=clientSocket->socketDescriptor();
-        SClients[idusersocs]=clientSocket;
-        connect(SClients[idusersocs],SIGNAL(readyRead()),this, SLOT(slotReadClient()));
+
+        int sizeList = SClients.size();
+        userAtserver newUser = {sizeList, idusersocs, clientSocket};
+
+        SClients.push_back(newUser);
+        qDebug() << "The size of list = " << sizeList;
+
+        connect(clientSocket,SIGNAL(readyRead()),this, SLOT(slotReadClient()));
+
     }
 }
 
 void MainWindow::slotReadClient()
 {
-    clientSocket = (QTcpSocket*)sender();
+    _sok = reinterpret_cast<QTcpSocket*>(sender());
 
-    QString name;
+    QString messageFromclient;
 
-    QDataStream in(clientSocket);
+    QDataStream in(_sok);
     in.setVersion(QDataStream::Qt_5_15);
+    in >> messageFromclient;
 
-    in >> name;
-
-    MessageProtocol message(name);
+    qDebug() << "I am here\n";
+    MessageProtocol message(messageFromclient);
     if (message.isValid()) {
 
-        ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+name+"\n\r");
+        ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n\r");
 
         if (!QString::compare(message.getMessage(), "/exit", Qt::CaseInsensitive)) {// Если нужно закрыть сокет
             clientSocket->close();
             qDebug() << QString::fromUtf8("Клиент отключился!");
             ui->textinfo->append(QString::fromUtf8("Клиент отключился!"));
         } else {
-            QDataStream out(clientSocket);
-            out << name;
+            //  Здесь надо исправить. Нужно создать метод, который будет извлекать конкретный сокет
+            int receiverId = message.getSenderId() - 1;
+            int id = getIdbyreceiver(receiverId);
+
+            qDebug() << "Id = " << id;
+
+            QDataStream out(SClients[id].clientSocket);
+            out.setVersion(QDataStream::Qt_5_15);
+            out << messageFromclient;
         }
 
-        QTextStream os(_sok);
-        os.setAutoDetectUnicode(true);
-        os << "HTTP/1.0 200 Ok\t" << QDateTime::currentDateTime().toString()+"\t"+name+"\n";
-        ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+name+"\n");
+        ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n");
     } else {
         ui->textinfo->append(QString::fromUtf8("Сообщение не получено!"));
     }
+}
+
+int MainWindow::getIdbyreceiver(int receiverId) {
+    for(int i = 0; i < SClients.size(); ++i) {
+        if (SClients[i].id == receiverId) {
+            return i;
+        }
+    }
+    return -1;
 }

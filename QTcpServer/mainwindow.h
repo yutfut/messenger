@@ -12,6 +12,11 @@
 namespace Ui {
     class MainWindow;
 }
+struct userAtserver {
+    int id;
+    int idusersoc;
+    QTcpSocket *clientSocket;
+};
 
 class QTcpServer;
 
@@ -34,7 +39,9 @@ private:
     QTcpSocket *_sok, *clientSocket;
     QTcpServer *tcp_Server;
     int server_status;
-    QMap<int,QTcpSocket *> SClients;
+    QList<userAtserver> SClients;
+
+    int getIdbyreceiver(int receiverId);
 };
 
 #endif // MAINWINDOW_H
