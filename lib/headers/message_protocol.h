@@ -13,36 +13,34 @@
 
 class MessageProtocol {
 public:
-    MessageProtocol(const size_t &dialogId, const QString &senderNickname, const QString &senderUser,
-                    const QString &receiverNickname, const QString &receiverUser, const QString &message);
+    MessageProtocol(const size_t &dialogId, const QString &senderUser, const QString &receiverUser, const QString &message, int SenderId, int receiverId);
     MessageProtocol(QString &protocolMessage);
 
     // Геттеры
     [[nodiscard]] size_t getDialogId() const;
-    [[nodiscard]] QString getSenderNickname() const;
     [[nodiscard]] QString getSenderUser() const;
     [[nodiscard]] QString getMessage() const;
-    [[nodiscard]] QString getReceiverNickame() const;
     [[nodiscard]] QString getReceiverUser() const;
     [[nodiscard]] QTime getTime() const;
+    [[nodiscard]] int getSenderId() const;
+    [[nodiscard]] int getReceiverId() const;
 
     bool isValid();
     void convert(QString &result);
 private:
     size_t dialogId;
-    size_t lengthSenderNickname;
     size_t lengthSenderUser;
-    size_t lengthReceiverNickname;
     size_t lengthReceiverUser;
 
-    QString senderNickname;
     QString senderUser;
-    QString receiverNickname;
     QString receiverUser;
 
     QString message;
 
     QTime currentTime;
+
+    qint8 senderId;
+    qint8 receiverId;
 };
 
 #endif // MESSAGEPROTOCOL_H

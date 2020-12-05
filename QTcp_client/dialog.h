@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QTcpSocket>
 #include <QHostAddress>
+#include <QTcpServer>
 #include <QMessageBox>
 
 namespace Ui {

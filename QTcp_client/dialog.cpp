@@ -52,7 +52,14 @@ void Dialog::onSokReadyRead() {
         sock_stream.setVersion(QDataStream::Qt_5_15);
 
         sock_stream.startTransaction();
+
         sock_stream >> buffer;
+        MessageProtocol message(buffer);
+        if (message.isValid()) {
+            addToLog(message.getReceiverUser() + ": " + message.getMessage(), Qt::blue);
+        } else {
+            displayError("Incorrect Data!!!");
+        }
 
         if (!sock_stream.commitTransaction()) {
             QString message = QString("%1 : No messages in server").arg(socket->socketDescriptor());
@@ -60,12 +67,6 @@ void Dialog::onSokReadyRead() {
             return;
         }
 
-        MessageProtocol message(buffer);
-        if (message.isValid()) {
-            addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
-        } else {
-            displayError("Incorrect Data!!!");
-        }
     }
     return;
 }
@@ -73,6 +74,7 @@ void Dialog::onSokReadyRead() {
 void Dialog::on_pbt_Send_clicked() {
     if (socket) {
         if (socket->isOpen()) {
+
             isButtonClicked = true;
 
             QDataStream socketStream(socket);
@@ -81,7 +83,9 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-            MessageProtocol message(1, "@borodulinartm", "Artem", "@yut_fut", "Sergey", textFromInput);
+            MessageProtocol message(1, "Sergey", "Artem", textFromInput, 2, 1);
+//            MessageProtocol message(1, "Artem", "Sergey", textFromInput, 1, 2);
+            qDebug() << socket->socketDescriptor();
 
             if (message.isValid()) {
                 QString messageTosent;
@@ -120,7 +124,7 @@ void Dialog::onSokDisconnected() {
 }
 
 void Dialog::on_pbConnect_clicked() {
-    socket->connectToHost(ui->leHost->text(), ui->sbPort->text().toInt());
+    socket->connectToHost(QHostAddress::LocalHost, 1234);
 }
 
 void Dialog::on_pbDisconnect_clicked() {
