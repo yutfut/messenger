@@ -25,6 +25,7 @@ public:
     [[nodiscard]] int getSenderId() const;
     [[nodiscard]] int getReceiverId() const;
 
+    void setMessage(QString &message);
     bool isValid();
     void convert(QString &result);
 private:

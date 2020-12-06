@@ -5,6 +5,7 @@
 #include <QtGui>
 #include <QDebug>
 
+
 Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     ui->setupUi(this);
 
@@ -51,22 +52,24 @@ void Dialog::onSokReadyRead() {
         QDataStream sock_stream(socket);
         sock_stream.setVersion(QDataStream::Qt_5_15);
 
-        sock_stream.startTransaction();
+        for(;;) {
 
-        sock_stream >> buffer;
-        MessageProtocol message(buffer);
-        if (message.isValid()) {
-            addToLog(message.getReceiverUser() + ": " + message.getMessage(), Qt::blue);
-        } else {
-            displayError("Incorrect Data!!!");
+            sock_stream.startTransaction();
+            sock_stream >> buffer;
+
+            if (!sock_stream.commitTransaction()) {
+                break;
+            } else {
+                MessageProtocol message(buffer);
+                if (message.isValid()) {
+                    if (!message.getMessage().contains("/hello")) {
+                        addToLog(message.getReceiverUser() + ": " + message.getMessage(), Qt::blue);
+                    }
+                } else {
+                    displayError("Incorrect Data!!!");
+                }
+            }
         }
-
-        if (!sock_stream.commitTransaction()) {
-            QString message = QString("%1 : No messages in server").arg(socket->socketDescriptor());
-            addToLog(message, Qt::blue);
-            return;
-        }
-
     }
     return;
 }
@@ -92,6 +95,8 @@ void Dialog::on_pbt_Send_clicked() {
 
                 message.convert(messageTosent);
                 socketStream << messageTosent;
+
+                socket->flush();
             } else {
                 displayError("Incorrect Data!!!");
             }
@@ -124,7 +129,7 @@ void Dialog::onSokDisconnected() {
 }
 
 void Dialog::on_pbConnect_clicked() {
-    socket->connectToHost(QHostAddress::LocalHost, 1234);
+    socket->connectToHost(QHostAddress::LocalHost, 8000);
 }
 
 void Dialog::on_pbDisconnect_clicked() {

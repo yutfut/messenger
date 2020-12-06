@@ -64,6 +64,10 @@ int MessageProtocol::getReceiverId() const {
     return receiverId;
 }
 
+void MessageProtocol::setMessage(QString &message) {
+    this->message = message;
+}
+
 void MessageProtocol::convert(QString &result) {
     result = QString("%1,%2,%3,%4,%5,%6").arg(QString::number(dialogId), QString::number(senderId), senderUser,
                                               QString::number(receiverId), receiverUser,message);
