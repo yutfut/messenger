@@ -9,13 +9,15 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "../lib/headers/message_protocol.h"
+
 namespace Ui {
     class MainWindow;
 }
 struct userAtserver {
-    int id;
     int idusersoc;
     QTcpSocket *clientSocket;
+    int countSendmessages;
 };
 
 class QTcpServer;
@@ -33,15 +35,16 @@ private slots:
     void on_stoping_clicked();
     void newuser();
     void slotReadClient();
+    void sendTouser(MessageProtocol &message, QString &messageFromclient);
 
+signals:
+    void sendMessage(MessageProtocol &message, QString &messageFromclient);
 private:
     Ui::MainWindow *ui;
     QTcpSocket *_sok, *clientSocket;
     QTcpServer *tcp_Server;
     int server_status;
     QList<userAtserver> SClients;
-
-    int getIdbyreceiver(int receiverId);
 };
 
 #endif // MAINWINDOW_H

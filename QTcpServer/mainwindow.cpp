@@ -25,8 +25,9 @@ MainWindow::~MainWindow()
 void MainWindow::on_starting_clicked()
 {
     connect(tcp_Server, SIGNAL(newConnection()), this, SLOT(newuser()));
+    connect(this, &MainWindow::sendMessage,this, &MainWindow::sendTouser);
 
-    if (!tcp_Server->listen(QHostAddress::Any, 1234) && server_status==0) {
+    if (!tcp_Server->listen(QHostAddress::Any, 8000) && server_status==0) {
         qDebug() <<  QObject::tr("Unable to start the server: %1.").arg(tcp_Server->errorString());
         ui->textinfo->append(tcp_Server->errorString());
     } else {
@@ -63,11 +64,9 @@ void MainWindow::newuser()
         QTcpSocket* clientSocket=tcp_Server->nextPendingConnection();
         int idusersocs=clientSocket->socketDescriptor();
 
-        int sizeList = SClients.size();
-        userAtserver newUser = {sizeList, idusersocs, clientSocket};
+        userAtserver newUser = {idusersocs, clientSocket, 0};
 
         SClients.push_back(newUser);
-        qDebug() << "The size of list = " << sizeList;
 
         connect(clientSocket,SIGNAL(readyRead()),this, SLOT(slotReadClient()));
 
@@ -76,47 +75,50 @@ void MainWindow::newuser()
 
 void MainWindow::slotReadClient()
 {
-    _sok = reinterpret_cast<QTcpSocket*>(sender());
+    clientSocket = reinterpret_cast<QTcpSocket*>(sender());
 
     QString messageFromclient;
 
-    QDataStream in(_sok);
+    QDataStream in(clientSocket);
     in.setVersion(QDataStream::Qt_5_15);
-    in >> messageFromclient;
 
-    qDebug() << "I am here\n";
-    MessageProtocol message(messageFromclient);
-    if (message.isValid()) {
+    for(;;) {
+        in.startTransaction();
+        if (clientSocket->bytesAvailable() < static_cast<int>(quint16())) {
+            break;
+        }
+        in >> messageFromclient;
 
-        ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n\r");
+        if (in.commitTransaction()) {
+            MessageProtocol message(messageFromclient);
+            if (message.isValid()) {
 
-        if (!QString::compare(message.getMessage(), "/exit", Qt::CaseInsensitive)) {// Если нужно закрыть сокет
-            clientSocket->close();
-            qDebug() << QString::fromUtf8("Клиент отключился!");
-            ui->textinfo->append(QString::fromUtf8("Клиент отключился!"));
+                ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n\r");
+
+                if (!QString::compare(message.getMessage(), "/exit", Qt::CaseInsensitive)) {// Если нужно закрыть сокет
+                    clientSocket->close();
+                    qDebug() << QString::fromUtf8("Клиент отключился!");
+                    ui->textinfo->append(QString::fromUtf8("Клиент отключился!"));
+                } else {
+                    emit sendMessage(message, messageFromclient);
+                }
+
+                ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n");
+            } else {
+                ui->textinfo->append(QString::fromUtf8("Сообщение не получено!"));
+            }
         } else {
-            //  Здесь надо исправить. Нужно создать метод, который будет извлекать конкретный сокет
-            int receiverId = message.getSenderId() - 1;
-            int id = getIdbyreceiver(receiverId);
-
-            qDebug() << "Id = " << id;
-
-            QDataStream out(SClients[id].clientSocket);
-            out.setVersion(QDataStream::Qt_5_15);
-            out << messageFromclient;
+            break;
         }
-
-        ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n");
-    } else {
-        ui->textinfo->append(QString::fromUtf8("Сообщение не получено!"));
     }
 }
 
-int MainWindow::getIdbyreceiver(int receiverId) {
-    for(int i = 0; i < SClients.size(); ++i) {
-        if (SClients[i].id == receiverId) {
-            return i;
-        }
+void MainWindow::sendTouser(MessageProtocol &message, QString &messageFromclient) {
+    int receiverId = message.getSenderId() - 1;
+    if (receiverId >=0 && receiverId < SClients.size()) {
+        QDataStream out(SClients[receiverId].clientSocket);
+        out.setVersion(QDataStream::Qt_5_15);
+        out << messageFromclient;
     }
-    return -1;
 }
+
