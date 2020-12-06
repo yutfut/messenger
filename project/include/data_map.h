@@ -19,14 +19,13 @@ private:
 
 class DialogManagerMap : public IDialogManager {
 public:
-    // idType check_dialog_creation(idType user_id, idType address_id) override;
     std::vector<Dialog> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
-    idType create_dlg_and_add_members (idType user_id, std::vector<idType> massive_customers) override;
+    idType create_dlg(idType user_id, std::vector<idType> massive_customers) override;
+    int add_members(idtype_t dialog_id, idType future_member_id, std::vector<idType> members_to_add) override;
 private:
     std::vector<std::pair<idType, idType>> members_dlg_id;
     std::vector<Dialog> massive_dlg;
     idType dialog_id = 0;
-    // std::vector <idType> massive_customers;
 };
 
 // MESSAGES

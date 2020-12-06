@@ -8,7 +8,7 @@
 
 //SQL
 
-int SQL::callback(void *NotUsed, int argc, char **argv, char **azColName){
+/*int SQL::callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for (i = 0; i < 3; i++)
         argv[i] ? argv[i] : "NULL";
@@ -21,6 +21,26 @@ int SQL::callback(void *NotUsed, int argc, char **argv, char **azColName){
             user.login = argv[i];
         }
     return 0;
+}*/
+
+int SQL::call_to_callback() {
+    callback = [this](void *NotUsed, int argc, char **argv, char **azColName)->int* {
+        int i;
+        for (i = 0; i < 3; i++)
+            argv[i] ? argv[i] : "NULL";
+        std::string S = argv[i];
+        if (i == 0) {
+            user.id = atoi(S.c_str()); // strtol
+            std::cout << user.id;
+        } else if (i == 1) {
+            user.name = argv[i];
+            std::cout << user.name;
+        } else {
+            user.login = argv[i];
+            std::cout << user.login;
+        }
+        return 0;
+    };
 }
 
 void SQL::check(int k, const std::string s, char* zErrMsg) {
@@ -79,7 +99,6 @@ sqlite3* SQL::create_data_base() {
     "member_id INTEGER);";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"DIALOG_MEMBERS", zErrMsg);
-    callbackPointer = callback(void *NotUsed, int argc, char **argv, char **azColName);
     sqlite3_close(Db);
     return Db;
 }
@@ -101,20 +120,17 @@ User UserManagerSQL::get_user(const std::string &login1) {
     "2, 'name', 'loginnnn');";
     sqlite3_exec(Database, sql, nullptr, nullptr, nullptr);
 
-    sql = "SELECT `ID` FROM USER WHERE LOGIN = &login1";
-    char **argv = {};
-    char **azColName = {};
-    int(*callbackPointer)();
-    callbackPointer = SQL::callback(void *NotUsed, int argc, char **argv, char **azColName);
-    callbackPointer();
-    sqlite3_exec(Database, sql,
-                 reinterpret_cast<int (*)(void *, int, char **, char **)>(SQL::callback(nullptr, 3, argv,
-                                                                                        azColName)), nullptr, nullptr); //queryall
+    sql = "SELECT `ID` FROM USER WHERE LOGIN = login1;";
+    //char **argv = {};
+    //char **azColName = {};
+    SQL::call_to_callback();
+    sqlite3_exec(Database, sql, reinterpret_cast<int (*)(void *, int, char **, char **)>(&callback), nullptr, nullptr);
 
-    //sql = "SELECT `NAME` FROM user WHERE (login1 == login)";
+    //sql = "SELECT `NAME` FROM user WHERE (login1 == 'login')";
     //sqlite3_exec(Database, sql, nullptr, nullptr, nullptr);
     //user.name = Name;
-    //std::cout << user.id;
+    //std::cout << user.id << "\n";
+    //std::cout << user.name;
 
     sqlite3_close(Db);
     return user;

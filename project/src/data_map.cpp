@@ -34,25 +34,20 @@ User UserManagerMap::create_user(const std::string &name, const std::string &log
 
 // DIALOGUES
 
-idType DialogManagerMap::create_dlg_and_add_members (idType user_id, std::vector<idType> massive_customers) {
+idType DialogManagerMap::create_dlg (idType user_id, std::vector<idType> massive_customers) {
     for (const auto i : massive_customers) {
         members_dlg_id.emplace_back(dialog_id, massive_customers[i]);
     }
-
-}
-/*idType DialogManagerMap::check_dialog_creation(idType user_id, idType address_id) {
-    for (const auto i : members_dlg_id) {
-        if ((i.first == user_id && i.second == address_id) ||
-            (i.first == address_id && i.second == user_id)) {
-            return dialog_id;
-        }
-    }
-    members_dlg_id.emplace_back(std::make_pair(user_id, address_id));
-    Dialog dialogue = {};
-    dialogue.id = dialog_id;
-    massive_dlg.push_back(dialogue);
     return dialog_id++;
-}*/
+}
+
+int DialogManagerMap::add_members(idtype_t dialog_id, idType future_member_id, std::vector<idType> members_to_add) {
+    for (const auto i : members_to_add) {
+        members_dlg_id.emplace_back(dialog_id, members_to_add[i]);
+    }
+    return 0;
+}
+
 std::vector<Dialog> DialogManagerMap::get_dialog (idType user_id, idType last_dlg_id/*why*/, idType limit) {
     std::vector<Dialog> dialogues;
     last_dlg_id = dialog_id;
