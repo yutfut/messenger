@@ -1,10 +1,11 @@
-#include "data_sql.h"
-#include "data_base.h"
 #include <vector>
 #include <string>
 #include <sqlite3.h>
 #include <iostream>
 #include <cstdlib>
+
+#include "../include/data_sql.h"
+#include "../include/data_base.h"
 
 //SQL
 

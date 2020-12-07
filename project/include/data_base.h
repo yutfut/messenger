@@ -12,6 +12,7 @@ public:
     // возвращает сообщения диалога начиная с last_msg_id, количество определяется лимитом
     virtual Message post_message (const Message& message) = 0;
     // регистрирует сообщение, вносит в бд
+    virtual int getMessageId() = 0;
 };
 
 class IUserManager {
@@ -30,8 +31,10 @@ public:
     // возвращает список диалогов начиная с last_dlg_id, количество = limit
     virtual idType create_dlg (idType user_id, std::vector<idType> massive_customers) = 0;
     // создает диалог/групповой чат,сразу добавляет туда пользователей
-    virtual int add_members(idtype_t dialog_id, idType future_member_id, std::vector<idType> members_to_add) = 0;
+    virtual int add_members(idType dialog_id, idType future_member_id, std::vector<idType> members_to_add) = 0;
     // добавляет пользователей в групповой чат(в случае надобности)
+    virtual int getUserIdInDialogues(idType dialogID, int &user_id) = 0;
+    virtual int isUserInDialog(idType dialogID, idType &userID) = 0;
 };
 
 #endif //PROJECT_DATA_BASE_H

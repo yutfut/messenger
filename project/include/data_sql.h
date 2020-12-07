@@ -38,7 +38,7 @@ private:
 class DialogManagerSQL : public IDialogManager {
 public:
     idType create_dlg (idType user_id, std::vector<idType> massive_customers) override;
-    int add_members(idtype_t dialog_id, idType future_member_id, std::vector<idType> members_to_add) override;
+    int add_members(idType dialog_id, idType future_member_id, std::vector<idType> members_to_add) override;
     std::vector<Dialog> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
 private:
     std::vector<std::pair<idType, idType>> members_dlg_id;
@@ -52,6 +52,7 @@ class MessageManagerSQL : public IMessageManager {
 public:
     Message post_message(const Message& message) override;
     std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, idType limit) override;
+    int getMessageId() override;
 private:
     idType id = 1;
     std::vector<Message> massive_messages;
