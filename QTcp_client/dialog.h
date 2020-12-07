@@ -39,6 +39,8 @@ private:
     Ui::Dialog *ui;
     QTcpSocket *socket;
     bool isButtonClicked;
+    int userId;
+    int dialogId;
 
     void addToLog(QString text, QColor color = Qt::black);
     void displayError(const QString &error);

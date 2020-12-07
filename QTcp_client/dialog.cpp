@@ -13,6 +13,9 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
 
     socket = new QTcpSocket(this);
     isButtonClicked = false;
+    //  В дальнейшем надо эти данные хранить в спец-файле (JSON)
+    userId = -1;
+    dialogId = -1;
 
     connect(socket, &QTcpSocket::readyRead, this, &Dialog::onSokReadyRead);
     connect(socket, &QTcpSocket::connected, this, &Dialog::onSokConnected);
@@ -45,58 +48,60 @@ void Dialog::onSokDisplayError(QAbstractSocket::SocketError socketError) {
 }
 
 void Dialog::onSokReadyRead() {
-    if (isButtonClicked) {
-        isButtonClicked = false;
         QString buffer;
 
         QDataStream sock_stream(socket);
         sock_stream.setVersion(QDataStream::Qt_5_15);
 
         for(;;) {
-
             sock_stream.startTransaction();
             sock_stream >> buffer;
+            qDebug() << buffer;
 
             if (!sock_stream.commitTransaction()) {
                 break;
             } else {
                 MessageProtocol message(buffer);
+                if (userId == -1) {
+                    userId = message.getSenderId();
+                }
+
+                if (dialogId == -1) {
+                    dialogId = message.getDialogId();
+                }
+
                 if (message.isValid()) {
                     if (!message.getMessage().contains("/hello")) {
-                        addToLog(message.getReceiverUser() + ": " + message.getMessage(), Qt::blue);
+                        addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
                     }
                 } else {
                     displayError("Incorrect Data!!!");
                 }
             }
         }
-    }
     return;
 }
 
 void Dialog::on_pbt_Send_clicked() {
     if (socket) {
         if (socket->isOpen()) {
-
-            isButtonClicked = true;
-
             QDataStream socketStream(socket);
             socketStream.setVersion(QDataStream::Qt_5_15);
 
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-            MessageProtocol message(1, "Sergey", "Artem", textFromInput, 2, 1);
-//            MessageProtocol message(1, "Artem", "Sergey", textFromInput, 1, 2);
-            qDebug() << socket->socketDescriptor();
+            MessageProtocol message(dialogId, "Sergey", "@yut_fut", textFromInput, userId);
+//            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, userId);
 
             if (message.isValid()) {
                 QString messageTosent;
 
-                message.convert(messageTosent);
+                messageTosent = message.convert();
                 socketStream << messageTosent;
+                qDebug() << socket->socketDescriptor();
 
-                socket->flush();
+                addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::yellow);
             } else {
                 displayError("Incorrect Data!!!");
             }

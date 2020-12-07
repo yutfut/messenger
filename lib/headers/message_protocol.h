@@ -13,35 +13,39 @@
 
 class MessageProtocol {
 public:
-    MessageProtocol(const size_t &dialogId, const QString &senderUser, const QString &receiverUser, const QString &message, int SenderId, int receiverId);
+    MessageProtocol(const int &dialogId, const QString &senderUser,
+                    const QString &nickName, const QString &message, int SenderId = -1);
     MessageProtocol(QString &protocolMessage);
+    MessageProtocol(const QString &senderUser, const QString &nickName, const QString &message);
 
     // Геттеры
-    [[nodiscard]] size_t getDialogId() const;
+    [[nodiscard]] int getDialogId() const;
     [[nodiscard]] QString getSenderUser() const;
+    [[nodiscard]] QString getNickname() const;
     [[nodiscard]] QString getMessage() const;
-    [[nodiscard]] QString getReceiverUser() const;
     [[nodiscard]] QTime getTime() const;
     [[nodiscard]] int getSenderId() const;
-    [[nodiscard]] int getReceiverId() const;
 
     void setMessage(QString &message);
+    void setUserId(int id);
+    void setDialogId(int id);
+
     bool isValid();
-    void convert(QString &result);
+    QString convert();
 private:
-    size_t dialogId;
+
+    int dialogId;
     size_t lengthSenderUser;
-    size_t lengthReceiverUser;
+    size_t lengthNickname;
 
     QString senderUser;
-    QString receiverUser;
+    QString nickName;
 
     QString message;
 
     QTime currentTime;
 
-    qint8 senderId;
-    qint8 receiverId;
+    int senderId;
 };
 
 #endif // MESSAGEPROTOCOL_H
