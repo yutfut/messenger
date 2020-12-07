@@ -1,20 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include "../lib/headers/message_protocol.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
+    ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     _sok = new QTcpSocket(this);
     tcp_Server = new QTcpServer();
-
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
     server_status=0;
     clientSocket->close();
@@ -22,8 +20,7 @@ MainWindow::~MainWindow()
     delete clientSocket;
 }
 
-void MainWindow::on_starting_clicked()
-{
+void MainWindow::on_starting_clicked() {
     connect(tcp_Server, SIGNAL(newConnection()), this, SLOT(newuser()));
     connect(this, &MainWindow::sendMessage,this, &MainWindow::sendTouser);
 
@@ -38,8 +35,7 @@ void MainWindow::on_starting_clicked()
     }
 }
 
-void MainWindow::on_stoping_clicked()
-{
+void MainWindow::on_stoping_clicked() {
     if(server_status==1){
         for(int i = 0; i < SClients.size(); ++i){
             QTextStream os(SClients[i].clientSocket);
@@ -56,20 +52,18 @@ void MainWindow::on_stoping_clicked()
 }
 
 
-void MainWindow::newuser()
-{
+void MainWindow::newuser() {
     if(server_status==1){
         qDebug() << QString::fromUtf8("У нас новое соединение!");
         ui->textinfo->append(QString::fromUtf8("У нас новое соединение!"));
-        QTcpSocket* clientSocket=tcp_Server->nextPendingConnection();
+        clientSocket=tcp_Server->nextPendingConnection();
         int idusersocs=clientSocket->socketDescriptor();
 
-        userAtserver newUser = {idusersocs, clientSocket, 0};
-
+        userAtserver newUser = {idusersocs, clientSocket};
         SClients.push_back(newUser);
 
+        //  Сигнал
         connect(clientSocket,SIGNAL(readyRead()),this, SLOT(slotReadClient()));
-
     }
 }
 
@@ -84,23 +78,48 @@ void MainWindow::slotReadClient()
 
     for(;;) {
         in.startTransaction();
-        if (clientSocket->bytesAvailable() < static_cast<int>(quint16())) {
-            break;
-        }
         in >> messageFromclient;
 
         if (in.commitTransaction()) {
             MessageProtocol message(messageFromclient);
-            if (message.isValid()) {
 
+            if (message.isValid()) {
                 ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n\r");
 
-                if (!QString::compare(message.getMessage(), "/exit", Qt::CaseInsensitive)) {// Если нужно закрыть сокет
+                // Добавление пользователей в БД
+                int userId = addUsertodatabase(message);
+                if (userId != message.getSenderId()) {
+                    message.setUserId(userId);
+                }
+
+                // Добавляем сообщение в общий диалог
+                int dialogId = message.getDialogId();
+                if (dialogId == -1) {
+                    std::vector<int> members = {userId};
+                    dialogId = dialogManager.create_dlg(userId, members);
+                    message.setDialogId(dialogId);
+                } else {
+                    int state = dialogManager.isUserInDialog(dialogId, userId);
+                    if (state == -1) {
+                        qDebug() << "-1 here";
+                        std::vector<int> members = {userId};
+                        dialogId = dialogManager.create_dlg(userId, members);
+                        message.setDialogId(dialogId);
+                    } else if (!state) {
+                        qDebug() << "0 here";
+                        std::vector<int> member = {userId};
+                        dialogManager.add_members(dialogId, 0, member);
+                    }
+                }
+                addMessagetodatabase(message, userId, dialogId);
+
+                // Специальный код, позволяющий завершить диалог и отключиться от сокета
+                if (!QString::compare(message.getMessage(), "/exit", Qt::CaseInsensitive)) {
                     clientSocket->close();
                     qDebug() << QString::fromUtf8("Клиент отключился!");
                     ui->textinfo->append(QString::fromUtf8("Клиент отключился!"));
                 } else {
-                    emit sendMessage(message, messageFromclient);
+                    emit sendMessage(message, dialogId);
                 }
 
                 ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n");
@@ -113,12 +132,42 @@ void MainWindow::slotReadClient()
     }
 }
 
-void MainWindow::sendTouser(MessageProtocol &message, QString &messageFromclient) {
-    int receiverId = message.getSenderId() - 1;
-    if (receiverId >=0 && receiverId < SClients.size()) {
+void MainWindow::sendTouser(MessageProtocol &message, int dialogID) {
+    int senderId = message.getSenderId();
+    int receiverId = dialogManager.getUserIdInDialogues(dialogID, senderId);
+
+    qDebug() << senderId << receiverId << dialogID;
+    qDebug() << message.convert();
+
+    if (receiverId != -1) {
+        QString m = message.convert();
         QDataStream out(SClients[receiverId].clientSocket);
         out.setVersion(QDataStream::Qt_5_15);
-        out << messageFromclient;
+        out << m;
+    } else {
+        qDebug() << "Невозможно отправить сообщение!!!";
     }
 }
 
+int MainWindow::addUsertodatabase(MessageProtocol &messageProtocol) {
+    std::string login = messageProtocol.getNickname().toStdString();
+    std::string name = messageProtocol.getSenderUser().toStdString();
+
+    User user = userManager.get_user(login);
+    if (user.login.compare(login)) {
+        userManager.create_user(name, login);
+        return userManager.get_user_id(login);
+    }
+
+    return messageProtocol.getSenderId();
+}
+
+int MainWindow::addMessagetodatabase(MessageProtocol &messageProtocol, int userID, int &dialogID) {
+    int messageId = messageManager.getMessageId();
+    Message message = {messageId, userID, dialogID, messageProtocol.getMessage().toStdString(),
+                      QTime::currentTime().toString().toStdString()};
+
+    messageManager.post_message(message);
+
+    return 0;
+}

@@ -9,7 +9,15 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include <vector>
+
 #include "../lib/headers/message_protocol.h"
+
+#include "../project/include/data_base.h"
+#include "../project/include/data_map.h"
+#include "../project/include/data_sql.h"
+
+#define NO_SENDER_ID -1
 
 namespace Ui {
     class MainWindow;
@@ -17,7 +25,6 @@ namespace Ui {
 struct userAtserver {
     int idusersoc;
     QTcpSocket *clientSocket;
-    int countSendmessages;
 };
 
 class QTcpServer;
@@ -35,16 +42,23 @@ private slots:
     void on_stoping_clicked();
     void newuser();
     void slotReadClient();
-    void sendTouser(MessageProtocol &message, QString &messageFromclient);
+    void sendTouser(MessageProtocol &message, int dialogID);
 
 signals:
-    void sendMessage(MessageProtocol &message, QString &messageFromclient);
+    void sendMessage(MessageProtocol &message, int dialogID);
 private:
     Ui::MainWindow *ui;
     QTcpSocket *_sok, *clientSocket;
     QTcpServer *tcp_Server;
     int server_status;
     QList<userAtserver> SClients;
+
+    UserManagerMap userManager;
+    DialogManagerMap dialogManager;
+    MessageManagerMap messageManager;
+
+    int addUsertodatabase(MessageProtocol &messageProtocol);
+    int addMessagetodatabase(MessageProtocol &messageProtocol, int userID, int &dialogID);
 };
 
 #endif // MAINWINDOW_H
