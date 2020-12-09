@@ -92,10 +92,11 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-            MessageProtocol message(0, "Sergey", "@yut_fut", textFromInput, 1);
-//            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, userId);
+//            MessageProtocol message(0, "Sergey", "@yut_fut", textFromInput, 1);
+            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, userId);
 
             if (message.isValid()) {
+                addFile(message);
                 QString messageTosent;
 
                 messageTosent = message.convert();
@@ -150,6 +151,22 @@ void Dialog::displayError(const QString &error) {
 void Dialog::disableButtons(const bool state, const bool state_2) {
     ui->pbt_Send->setDisabled(state);
     ui->message_Edit->setDisabled(state_2);
+}
+
+void Dialog::addFile(MessageProtocol &protocol) {
+    QString path = "../test.txt";
+    QByteArray data;
+
+    QFile file(path);
+    QList<QPair<QString, QByteArray>> info;
+
+    qDebug() << "I am here\n";
+
+    if (file.open(QIODevice::ReadOnly)) {
+        data = file.readAll();
+        info.push_back(qMakePair(path, data));
+        protocol.setFile(info);
+    }
 }
 
 void Dialog::addToLog(QString text, QColor color) {

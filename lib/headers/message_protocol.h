@@ -7,6 +7,8 @@
 #include <QTime>
 #include <QDebug>
 #include <QJsonObject>
+#include <QPair>
+#include <QJsonArray>
 #include <QJsonDocument>
 
 #define MAX_NICKNAME_LENGTH 255
@@ -25,29 +27,22 @@ public:
     [[nodiscard]] QString getSenderUser() const;
     [[nodiscard]] QString getNickname() const;
     [[nodiscard]] QString getMessage() const;
-    [[nodiscard]] QTime getTime() const;
     [[nodiscard]] int getSenderId() const;
 
     void setMessage(QString &message);
     void setUserId(int id);
     void setDialogId(int id);
+    void setFile(QList<QPair<QString, QByteArray>> files);
 
     bool isValid();
     QString convert();
 private:
-
-    int dialogId;
     size_t lengthSenderUser;
     size_t lengthNickname;
 
-    QString senderUser;
-    QString nickName;
+    QJsonObject finalObject;
 
-    QString message;
-
-    QTime currentTime;
-
-    int senderId;
+    void fillData(const QString &senderUser, const QString &nickName, const QString &message);
 };
 
 #endif // MESSAGEPROTOCOL_H

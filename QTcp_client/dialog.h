@@ -46,6 +46,7 @@ private:
     void addToLog(QString text, QColor color = Qt::black);
     void displayError(const QString &error);
     void disableButtons(const bool state_1, const bool state_2 = true);
+    void addFile(MessageProtocol &protocol);
 
 };
 
