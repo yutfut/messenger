@@ -10,19 +10,19 @@ MessageProtocol::MessageProtocol(const int &dialogId, const QString &senderUser,
 
 // Распарсинг сообщений
 MessageProtocol::MessageProtocol(QString &protocolMessage) {
-    QStringList split_data = protocolMessage.split(',');
-//    qDebug() << split_data;
+    QJsonObject object = QJsonDocument::fromJson(protocolMessage.toUtf8()).object();
 
-    dialogId = split_data[0].toInt();
-    senderId = split_data[1].toInt();
-    nickName = split_data[2];
-    senderUser = split_data[3];
+    // Заполняем наши поля
+    dialogId = object["dialogId"].toInt();
+    senderId = object["senderId"].toInt();
 
-    for(int j = 4; j < split_data.size(); ++j) {
-        message+=split_data[j];
-    }
+    senderUser = object["senderUser"].toString();
+    nickName = object["nickName"].toString();
+    message = object["message"].toString();
 
     lengthSenderUser = senderUser.size();
+    lengthNickname = nickName.size();
+
 }
 
 // Данный конструктор нужен когда пользователь вообще ничего не знает о своих ID и DialogID
@@ -75,7 +75,15 @@ void MessageProtocol::setMessage(QString &message) {
 }
 
 QString MessageProtocol::convert() {
-    return QString("%1,%2,%3,%4,%5").arg(QString::number(dialogId), QString::number(senderId), nickName, senderUser, message);
+    QJsonObject finalObject( {
+                                 qMakePair(QString("dialogId"), QJsonValue(dialogId)),
+                                 qMakePair(QString("senderId"), QJsonValue(senderId)),
+                                 qMakePair(QString("nickName"), QJsonValue(nickName)),
+                                 qMakePair(QString("senderUser"), QJsonValue(senderUser)),
+                                 qMakePair(QString("message"), QJsonValue(message)),
+                             });
+    QJsonDocument document(finalObject);
+    return document.toJson(QJsonDocument::Compact);
 }
 
 void MessageProtocol::setUserId(int id) {

@@ -6,6 +6,8 @@
 #include <QString>
 #include <QTime>
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #define MAX_NICKNAME_LENGTH 255
 #define MAX_USER_LENGTH 255

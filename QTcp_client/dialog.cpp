@@ -13,6 +13,7 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
 
     socket = new QTcpSocket(this);
     isButtonClicked = false;
+
     //  В дальнейшем надо эти данные хранить в спец-файле (JSON)
     userId = -1;
     dialogId = -1;
@@ -91,7 +92,7 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-            MessageProtocol message(dialogId, "Sergey", "@yut_fut", textFromInput, userId);
+            MessageProtocol message(0, "Sergey", "@yut_fut", textFromInput, 1);
 //            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, userId);
 
             if (message.isValid()) {

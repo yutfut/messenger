@@ -8,6 +8,7 @@
 #include <QHostAddress>
 #include <QTcpServer>
 #include <QMessageBox>
+#include <QVariantList>
 
 namespace Ui {
     class Dialog;
