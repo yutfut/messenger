@@ -27,7 +27,7 @@ struct Dialog {
     idType id;
 };
 
-struct dialogue_members {
+struct Dialogue_members {
     idType id;
     idType  dialog_id;
     idType member_id;
