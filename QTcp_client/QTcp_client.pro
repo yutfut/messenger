@@ -14,13 +14,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         dialog.cpp \
-        ../lib/src/message_protocol.cpp
+        ../lib/src/message_protocol.cpp \
 
 HEADERS  += dialog.h \
-            ../lib/headers/message_protocol.h
+            ../lib/headers/message_protocol.h \
 
 
 FORMS    += dialog.ui
-
-
-

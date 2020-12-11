@@ -9,6 +9,7 @@
 #include <QTcpServer>
 #include <QMessageBox>
 #include <QVariantList>
+#include <QFileDialog>
 
 namespace Ui {
     class Dialog;
@@ -36,17 +37,21 @@ private slots:
     void on_pbt_Send_clicked();
     void on_message_Edit_textEdited(const QString &arg1);
 
+    void on_attachmentBtn_clicked();
+
 private:
     Ui::Dialog *ui;
     QTcpSocket *socket;
     bool isButtonClicked;
+    QString filePath;
     int userId;
     int dialogId;
 
     void addToLog(QString text, QColor color = Qt::black);
     void displayError(const QString &error);
     void disableButtons(const bool state_1, const bool state_2 = true);
-    void addFile(MessageProtocol &protocol);
+    void addFile(MessageProtocol &protocol, QString &filePath);
+    void saveFiles(MessageProtocol &protocol, QString &filePath);
 
 };
 

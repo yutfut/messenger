@@ -5,6 +5,8 @@
 #include <QtGui>
 #include <QDebug>
 
+#include <fstream>
+
 
 Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     ui->setupUi(this);
@@ -57,7 +59,6 @@ void Dialog::onSokReadyRead() {
         for(;;) {
             sock_stream.startTransaction();
             sock_stream >> buffer;
-            qDebug() << buffer;
 
             if (!sock_stream.commitTransaction()) {
                 break;
@@ -75,6 +76,13 @@ void Dialog::onSokReadyRead() {
                     if (!message.getMessage().contains("/hello")) {
                         addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
                     }
+                    if (message.isFilesInMessage()) {
+                        filePath = QFileDialog::getSaveFileName(this, tr("Save File"), QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+                        saveFiles(message, filePath);
+                        message.removeFiles();
+                        filePath = "";
+                    }
+
                 } else {
                     displayError("Incorrect Data!!!");
                 }
@@ -96,13 +104,15 @@ void Dialog::on_pbt_Send_clicked() {
             MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, userId);
 
             if (message.isValid()) {
-                addFile(message);
+                if (filePath.size()) {
+                    addFile(message, filePath);
+                    filePath = "";
+                }
+
                 QString messageTosent;
-
                 messageTosent = message.convert();
-                socketStream << messageTosent;
-                qDebug() << socket->socketDescriptor();
 
+                socketStream << messageTosent;
                 addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::yellow);
             } else {
                 displayError("Incorrect Data!!!");
@@ -117,6 +127,11 @@ void Dialog::on_pbt_Send_clicked() {
     } else {
         displayError("Socket can't connect to server");
     }
+}
+
+void Dialog::on_attachmentBtn_clicked() {
+    filePath = QFileDialog::getOpenFileName(this, ("Выберите файл"), QStandardPaths::writableLocation(QStandardPaths::AppDataLocation),
+                                            ("FILE (*.json, *.txt)"));
 }
 
 void Dialog::onSokConnected() {
@@ -153,21 +168,37 @@ void Dialog::disableButtons(const bool state, const bool state_2) {
     ui->message_Edit->setDisabled(state_2);
 }
 
-void Dialog::addFile(MessageProtocol &protocol) {
-    QString path = "../test.txt";
+void Dialog::addFile(MessageProtocol &protocol, QString &filePath) {
+    ui->labelFiles->setText(filePath);
     QByteArray data;
 
-    QFile file(path);
+    QFile file(filePath);
     QList<QPair<QString, QByteArray>> info;
-
-    qDebug() << "I am here\n";
 
     if (file.open(QIODevice::ReadOnly)) {
         data = file.readAll();
-        info.push_back(qMakePair(path, data));
+        int size = filePath.split('/').size();
+        if (size) {
+            info.push_back(qMakePair(filePath.split('/')[size - 1], data));
+        } else {
+            info.push_back(qMakePair(filePath, data));
+        }
         protocol.setFile(info);
     }
 }
+
+void Dialog::saveFiles(MessageProtocol &protocol, QString &filePath) {
+    auto files = protocol.getFiles();
+
+    for(int i = 0; i < files.size(); ++i) {
+        QFile file(filePath);
+        if (file.open(QIODevice::WriteOnly)) {
+            file.write(files[i].second);
+        }
+        file.close();
+    }
+}
+
 
 void Dialog::addToLog(QString text, QColor color) {
     QString message = QString(QTime::currentTime().toString() + " " + text);

@@ -33,9 +33,12 @@ public:
     void setUserId(int id);
     void setDialogId(int id);
     void setFile(QList<QPair<QString, QByteArray>> files);
+    void removeFiles();
 
     bool isValid();
-    QString convert();
+    bool isFilesInMessage();
+    QByteArray convert();
+    QList<QPair<QString, QByteArray>> getFiles();
 private:
     size_t lengthSenderUser;
     size_t lengthNickname;

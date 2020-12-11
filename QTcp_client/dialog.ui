@@ -21,6 +21,13 @@
     <widget class="QTextBrowser" name="lwLog"/>
    </item>
    <item>
+    <widget class="QLabel" name="labelFiles">
+     <property name="text">
+      <string>Прикреплённые файлы:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="1">
       <widget class="QPushButton" name="pbDisconnect">
@@ -62,6 +69,13 @@
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Введите сообщение</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="attachmentBtn">
+       <property name="text">
+        <string>Прикрепить</string>
        </property>
       </widget>
      </item>

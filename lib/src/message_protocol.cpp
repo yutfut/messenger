@@ -66,7 +66,7 @@ void MessageProtocol::setMessage(QString &message) {
     finalObject["message"] = message;
 }
 
-QString MessageProtocol::convert() {
+QByteArray MessageProtocol::convert() {
     QJsonDocument document(finalObject);
     return document.toJson(QJsonDocument::Compact);
 }
@@ -110,6 +110,8 @@ void MessageProtocol::setFile(QList<QPair<QString, QByteArray>> files) {
     for(int i = 0; i < files.size(); ++i) {
         currentObject.insert("filename", QString(files[i].first));
         currentObject.insert("content", QString(files[i].second));
+        qDebug() << currentObject["content"];
+
         plotArray.push_back(QJsonValue(currentObject));
 
         // Удаляем ключи
