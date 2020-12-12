@@ -131,7 +131,7 @@ void Dialog::on_pbt_Send_clicked() {
 
 void Dialog::on_attachmentBtn_clicked() {
     filePath = QFileDialog::getOpenFileName(this, ("Выберите файл"), QStandardPaths::writableLocation(QStandardPaths::AppDataLocation),
-                                            ("FILE (*.json, *.txt)"));
+                                            ("FILE (*.*)"));
 }
 
 void Dialog::onSokConnected() {
@@ -198,7 +198,6 @@ void Dialog::saveFiles(MessageProtocol &protocol, QString &filePath) {
         file.close();
     }
 }
-
 
 void Dialog::addToLog(QString text, QColor color) {
     QString message = QString(QTime::currentTime().toString() + " " + text);
