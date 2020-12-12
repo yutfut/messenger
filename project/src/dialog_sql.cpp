@@ -1,11 +1,17 @@
 #include <sqlite3.h>
 #include <iostream>
-#include "sql.h"
-#include "interface.h"
 #include <string>
-#include<cstdlib>
+#include <cstdlib>
+
+#include "../include/sql.h"
+#include "../include/interface.h"
 
 // DIALOGUES
+DialogManagerSQL::DialogManagerSQL() {
+    if (Db == nullptr) {
+        Db = create_data_base();
+    }
+}
 
 int DialogManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColName) {
     std::vector<idType> *dlg_members = (std::vector<idType>*)NotUsed;
@@ -102,10 +108,10 @@ int DialogManagerSQL::is_user_in_dlg(idType dialog_id, idType user_id) {
     return check_result;
 }
 
-std::vector<idType> DialogManagerSQL::get_users_in_dlg(idType dialog_id, idType user_id) {
+std::vector<idType> DialogManagerSQL::get_users_in_dlg(idType dialog_id) {
     sqlite3_stmt* select_stmt;
     sqlite3_open("data_base.db", &Db);
-    sql = sqlite3_mprintf("SELECT MEMBER_ID FROM DIALOG_MEMBERS WHERE DIALOG_id = %d AND MEMBER_ID != %d;",dialog_id, user_id);
+    sql = sqlite3_mprintf("SELECT MEMBER_ID FROM DIALOG_MEMBERS WHERE DIALOG_id = %d;",dialog_id);
     //sql = "SELECT MEMBER_ID FROM DIALOG_MEMBERS WHERE DIALOG_id = ? AND MEMBER_ID != ?;";
     //sqlite3_prepare_v2(Db,sql,-1,&select_stmt, nullptr);
     //sqlite3_bind_int(select_stmt,1,dialog_id);

@@ -1,8 +1,15 @@
 #include <sqlite3.h>
 #include <iostream>
-#include "sql.h"
-#include "interface.h"
 #include <string>
+
+#include "../include/sql.h"
+#include "../include/interface.h"
+
+MessageManagerSQL::MessageManagerSQL() {
+    if (get_db() == nullptr) {
+        Db = create_data_base();
+    }
+}
 
 int MessageManagerSQL::callback_vec(void *NotUsed, int argc, char **argv, char **azColName) {
     std::vector<Message> *msg = (std::vector<Message>*)NotUsed;

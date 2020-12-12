@@ -32,7 +32,7 @@ public:
     // создает диалог/групповой чат,сразу добавляет туда пользователей
     virtual int add_members(idType dialog_id, std::vector<idType> members_to_add) = 0;
     // добавляет пользователей в групповой чат(в случае надобности)
-    virtual std::vector<idType> get_users_in_dlg(idType dialog_id, idType user_id) = 0;
+    virtual std::vector<idType> get_users_in_dlg(idType dialog_id) = 0;
     // возвращает айди пользователей кроме самого юзера по айди диалога
     virtual int is_user_in_dlg(idType dialog_id, idType user_id) = 0;
     // Проверяет есть ли юзер в диалоге

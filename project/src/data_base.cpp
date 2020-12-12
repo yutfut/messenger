@@ -1,7 +1,7 @@
 #include <string>
 #include <sqlite3.h>
 #include <iostream>
-#include "sql.h"
+#include "../project/include/sql.h"
 
 //SQL
 
@@ -73,4 +73,3 @@ sqlite3* SQL::create_data_base() {
 sqlite3* SQL::get_db() {
     return Db;
 }
-

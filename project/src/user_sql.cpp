@@ -1,9 +1,15 @@
 #include <string>
 #include <sqlite3.h>
 #include <iostream>
-#include "sql.h"
+
+#include "../include/sql.h"
 
 //USER
+UserManagerSQL::UserManagerSQL() {
+    if (!Db) {
+        Db = this->create_data_base();
+    }
+}
 
 int UserManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
