@@ -13,9 +13,7 @@
 
 #include "../lib/headers/message_protocol.h"
 
-#include "../project/include/data_base.h"
-#include "../project/include/data_map.h"
-#include "../project/include/data_sql.h"
+#include "../project/include/sql.h"
 
 #define NO_SENDER_ID -1
 
@@ -52,10 +50,11 @@ private:
     QTcpServer *tcp_Server;
     int server_status;
     QList<userAtserver> SClients;
+    std::vector<int> state;
 
-    UserManagerMap userManager;
-    DialogManagerMap dialogManager;
-    MessageManagerMap messageManager;
+    UserManagerSQL userManager;
+    DialogManagerSQL dialogManager;
+    MessageManagerSQL messageManager;
 
     int addUsertodatabase(MessageProtocol &messageProtocol);
     int addMessagetodatabase(MessageProtocol &messageProtocol, int userID, int &dialogID);

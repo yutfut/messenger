@@ -10,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _sok = new QTcpSocket(this);
     tcp_Server = new QTcpServer();
+
+    UserManagerSQL();
+    DialogManagerSQL();
+    MessageManagerSQL();
+
 }
 
 MainWindow::~MainWindow() {
@@ -51,7 +56,6 @@ void MainWindow::on_stoping_clicked() {
     }
 }
 
-
 void MainWindow::newuser() {
     if(server_status==1){
         qDebug() << QString::fromUtf8("У нас новое соединение!");
@@ -71,11 +75,14 @@ void MainWindow::slotReadClient()
 {
     clientSocket = reinterpret_cast<QTcpSocket*>(sender());
 
+    //  Данная переменная осуществляет получение сообщения от текущего клиента
     QString messageFromclient;
 
+    // Открываем поток
     QDataStream in(clientSocket);
     in.setVersion(QDataStream::Qt_5_15);
 
+    // Бесконечным циклом прогоняем до тех пор, пока есть сообщения на сокете
     for(;;) {
         in.startTransaction();
         in >> messageFromclient;
@@ -88,29 +95,52 @@ void MainWindow::slotReadClient()
 
                 // Добавление пользователей в БД
                 int userId = addUsertodatabase(message);
-                if (userId != message.getSenderId()) {
-                    message.setUserId(userId);
-                }
+                message.setUserId(userId);
 
                 // Добавляем сообщение в общий диалог
                 int dialogId = message.getDialogId();
                 if (dialogId == -1) {
+                    // Если такого dialogID не существует, то проектируем его
                     std::vector<int> members = {userId};
                     dialogId = dialogManager.create_dlg(userId, members);
                     message.setDialogId(dialogId);
                 } else {
-                    int state = dialogManager.isUserInDialog(dialogId, userId);
-                    if (state == -1) {
-                        qDebug() << "-1 here";
+                    //  Получаем список юзеров, которые состоят в одном диалоге
+                    state = dialogManager.get_users_in_dlg(dialogId);
+
+                    // Убираем значения, которые уже попадались в вектор
+                    std::sort(state.begin(), state.end());
+                    state.erase(std::unique(state.begin(), state.end()), state.end());
+                    qDebug() << userId << dialogId << state;
+
+                    // Если список юзеров пустой, то диалога нет и его надо создать
+                    if (!state.size()) {
                         std::vector<int> members = {userId};
+
                         dialogId = dialogManager.create_dlg(userId, members);
                         message.setDialogId(dialogId);
-                    } else if (!state) {
+
+                    // Иначе смотрим и добавляем нового юзера, если его нет в списке
+                    } else {
+                        // Есть ли юзер уже в конкретном диалоге
+                        bool isUserInData = false;
+                        for(size_t i = 0; i < state.size(); ++i) {
+                            if (state[i] == userId) {
+                                // Если есть, то тогда мы его не включаем
+                                isUserInData = true;
+                                break;
+                            }
+                        }
                         qDebug() << "0 here";
-                        std::vector<int> member = {userId};
-                        dialogManager.add_members(dialogId, 0, member);
+                        if (!isUserInData) {
+                            // Иначе включаем, если его нет в списке
+                            std::vector<int> member = {userId};
+                            dialogManager.add_members(dialogId, member);
+                        }
                     }
                 }
+
+                // Метод, осуществляющий добавление сообщения в базу
                 addMessagetodatabase(message, userId, dialogId);
 
                 // Специальный код, позволяющий завершить диалог и отключиться от сокета
@@ -132,36 +162,45 @@ void MainWindow::slotReadClient()
     }
 }
 
+//Метод отправляет сообщение конкретному юзеру (юзерам)
 void MainWindow::sendTouser(MessageProtocol &message, int dialogID) {
+    // Отправитель
     int senderId = message.getSenderId();
-    int receiverId = dialogManager.getUserIdInDialogues(dialogID, senderId);
 
-    qDebug() << senderId << receiverId << dialogID;
-    qDebug() << message.convert();
-
-    if (receiverId != -1) {
-        QString m = message.convert();
-        QDataStream out(SClients[receiverId].clientSocket);
-        out.setVersion(QDataStream::Qt_5_15);
-        out << m;
-    } else {
-        qDebug() << "Невозможно отправить сообщение!!!";
+    for(size_t i = 0; i < state.size(); ++i) {
+        if (state[i] != -1 && state[i] != senderId) {
+            // Отправка конкретному юзеру
+            QString m = message.convert();
+            QDataStream out(SClients[state[i] - 1].clientSocket);
+            out.setVersion(QDataStream::Qt_5_15);
+            out << m;
+        } else {
+            qDebug() << "Невозможно отправить сообщение!!!";
+        }
     }
 }
 
+// Метод обавляет пользователя в БД
 int MainWindow::addUsertodatabase(MessageProtocol &messageProtocol) {
+    // Никнейм + имя
     std::string login = messageProtocol.getNickname().toStdString();
     std::string name = messageProtocol.getSenderUser().toStdString();
 
+    // Формируем юзера
     User user = userManager.get_user(login);
     if (user.login.compare(login)) {
+        // Добавляем юзера в БД
         userManager.create_user(name, login);
-        return userManager.get_user_id(login);
+
+        // Возвращаем его ID
+        return userManager.get_user(login).id;
     }
 
-    return messageProtocol.getSenderId();
+    // Если юзер уже есть в БД, то нам ничего делать не нужно, просто возвращаем его ID
+    return user.id;
 }
 
+// Метод добавляет сообщение в БД
 int MainWindow::addMessagetodatabase(MessageProtocol &messageProtocol, int userID, int &dialogID) {
     int messageId = messageManager.getMessageId();
     Message message = {messageId, userID, dialogID, messageProtocol.getMessage().toStdString(),

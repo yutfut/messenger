@@ -16,14 +16,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
         ../lib/src/message_protocol.cpp \
-        ../project/src/data_map.cpp \
-        ../project/src/data_sql.cpp \
+        ../project/src/dialog_sql.cpp \
+        ../project/src/message_sql.cpp \
+        ../project/src/user_sql.cpp \
+        ../project/src/data_base.cpp \
 
 HEADERS  += mainwindow.h \
             ../lib/header/message_protocol.h \
-            ../project/include/data_map.h \
-            ../project/include/data_sql.h \
-            ../project/include/data_base.h \
+            ../project/include/sql.h \
             ../project/include/structures.h \
+            ../project/include/interface.h \
 
 FORMS    += mainwindow.ui
