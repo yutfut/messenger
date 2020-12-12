@@ -1,0 +1,50 @@
+    //  Это массив []
+    QJsonArray plot_array;
+
+    //  Непосредственно объекты (то что находится внутри {})
+    QJsonObject object;
+    object.insert("file_name", "input.txt");
+    object.insert("text", "hi from Russhia");
+
+    // Добавляем в массив содержимое внутри {}
+    plot_array.push_back(QJsonValue(object));
+
+    // Непосредственно объекты (то что находится внутри {})
+    QJsonObject object_2;
+    object_2.insert("file_name", "qt.xml");
+    object_2.insert("text", "i am qt");
+
+    // Добавляем в массив содержимое внутри {}
+    plot_array.push_back(QJsonValue(object_2));
+
+    // Формируем наш главный объект
+    QJsonObject final_obkect;
+    final_obkect.insert("Title", "Value of title");
+    final_obkect.insert("DialogID", 2);
+    final_obkect.insert("files", QJsonValue(plot_array));
+
+    // Формируем из него строку (для шифрования)
+    QJsonDocument doc(final_obkect);
+    QString jsonToString(doc.toJson(QJsonDocument::Compact));
+
+    qDebug() << jsonToString;
+
+    // Распарсиваем объект (аналогично переменной final_obkect)
+    QJsonObject unpare_object = QJsonDocument::fromJson(jsonToString.toUtf8()).object();
+    int id = unpare_object["DialogID"].toInt();
+    qDebug() << unpare_object["Title"].toString();
+    qDebug() << id;
+    // Распарсиваем массив. Если размер = 0, то что-то пошло не так
+    QJsonArray arr = unpare_object["files"].toArray();
+
+    // Циклом проходим по всем её значениям
+    foreach(const QJsonValue &value, arr) {
+        // Фиксируем то, что внутри {} внутри []
+        QJsonObject obj = value.toObject();
+
+        QString file_name = obj["file_name"].toString();
+        QString text = obj["text"].toString();
+
+        qDebug() << file_name;
+        qDebug() << text;
+    }

@@ -100,8 +100,8 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-//            MessageProtocol message(0, "Sergey", "@yut_fut", textFromInput, 1);
-            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, userId);
+            MessageProtocol message(1, "Sergey", "@yut_fut", textFromInput, 2);
+//            MessageProtocol message(1, "Artem", "@bus_artem", textFromInput, userId);
 
             if (message.isValid()) {
                 if (filePath.size()) {
