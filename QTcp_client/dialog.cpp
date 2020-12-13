@@ -17,8 +17,8 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     isButtonClicked = false;
 
     //  В дальнейшем надо эти данные хранить в спец-файле (JSON)
-    userId = -1;
-    dialogId = -1;
+    userId = 1;
+    dialogId = 1;
 
     connect(socket, &QTcpSocket::readyRead, this, &Dialog::onSokReadyRead);
     connect(socket, &QTcpSocket::connected, this, &Dialog::onSokConnected);
@@ -100,8 +100,8 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
-            MessageProtocol message(1, "Sergey", "@yut_fut", textFromInput, 2);
-//            MessageProtocol message(1, "Artem", "@bus_artem", textFromInput, userId);
+            MessageProtocol message(dialogId, "Sergey", "@yut_fut", textFromInput, 2);
+//            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, 1);
 
             if (message.isValid()) {
                 if (filePath.size()) {
@@ -135,6 +135,14 @@ void Dialog::on_attachmentBtn_clicked() {
 }
 
 void Dialog::onSokConnected() {
+    MessageProtocol message(dialogId, "Sergey", "@yut_fut", "/hello", 2);
+//  MessageProtocol message(dialogId, "Artem", "@bus_artem", "/hello", 1);
+
+    QDataStream stream(socket);
+    stream.setVersion(QDataStream::Qt_5_15);
+    QString convertMessage = message.convert();
+    stream << convertMessage;
+
     ui->pbConnect->setEnabled(false);
     ui->pbDisconnect->setEnabled(true);
     addToLog("Connected to"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),Qt::green);
