@@ -5,9 +5,6 @@
 #include <QtGui>
 #include <QDebug>
 
-#include <fstream>
-
-
 Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     ui->setupUi(this);
 
@@ -135,6 +132,7 @@ void Dialog::on_attachmentBtn_clicked() {
 }
 
 void Dialog::onSokConnected() {
+    // Издержки тестирования
     MessageProtocol message(dialogId, "Sergey", "@yut_fut", "/hello", 2);
 //  MessageProtocol message(dialogId, "Artem", "@bus_artem", "/hello", 1);
 
