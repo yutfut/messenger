@@ -11,9 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
     _sok = new QTcpSocket(this);
     tcp_Server = new QTcpServer();
 
-    UserManagerSQL();
-    DialogManagerSQL();
-    MessageManagerSQL();
+//    UserManagerSQL();
+//    DialogManagerSQL();
+//    MessageManagerSQL();
 
 }
 
@@ -61,10 +61,6 @@ void MainWindow::newuser() {
         qDebug() << QString::fromUtf8("У нас новое соединение!");
         ui->textinfo->append(QString::fromUtf8("У нас новое соединение!"));
         clientSocket=tcp_Server->nextPendingConnection();
-        int idusersocs=clientSocket->socketDescriptor();
-
-        userAtserver newUser = {idusersocs, clientSocket};
-        SClients.push_back(newUser);
 
         //  Сигнал
         connect(clientSocket,SIGNAL(readyRead()),this, SLOT(slotReadClient()));
@@ -148,8 +144,17 @@ void MainWindow::slotReadClient()
                     clientSocket->close();
                     qDebug() << QString::fromUtf8("Клиент отключился!");
                     ui->textinfo->append(QString::fromUtf8("Клиент отключился!"));
-                } else {
-                    emit sendMessage(message, dialogId);
+
+                // Если к нам пришло простое hello-сообщение (оно придёт при вызове), то добавляем юзера в списое доступных юзеров
+                } else if (!QString::compare(message.getMessage(), "/hello", Qt::CaseInsensitive)) {
+                    // Формируем новую структуру
+                    int sockDescr = clientSocket->socketDescriptor();
+                    userAtserver newUser = {message.getSenderId(), sockDescr, clientSocket};
+                    SClients.push_back(newUser);
+                    qDebug() << "New user:"<<message.getSenderId();
+                }
+                else {
+                    emit sendMessage(message);
                 }
 
                 ui->textinfo->append("ReadClient:"+QDateTime::currentDateTime().toString()+"\t"+messageFromclient+"\n");
@@ -163,7 +168,7 @@ void MainWindow::slotReadClient()
 }
 
 //Метод отправляет сообщение конкретному юзеру (юзерам)
-void MainWindow::sendTouser(MessageProtocol &message, int dialogID) {
+void MainWindow::sendTouser(MessageProtocol &message) {
     // Отправитель
     int senderId = message.getSenderId();
 
@@ -171,7 +176,21 @@ void MainWindow::sendTouser(MessageProtocol &message, int dialogID) {
         if (state[i] != -1 && state[i] != senderId) {
             // Отправка конкретному юзеру
             QString m = message.convert();
-            QDataStream out(SClients[state[i] - 1].clientSocket);
+
+            int j = 0;
+            bool isFound = false;
+            for(j=0; j < SClients.size(); ++j) {
+                if (SClients[j].userId == state[i]) {
+                    isFound = true;
+                    break;
+                }
+            }
+
+            if (!isFound) {
+                continue;
+            }
+
+            QDataStream out(SClients[j].clientSocket);
             out.setVersion(QDataStream::Qt_5_15);
             out << m;
         } else {

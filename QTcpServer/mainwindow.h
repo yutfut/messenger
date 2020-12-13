@@ -21,6 +21,7 @@ namespace Ui {
     class MainWindow;
 }
 struct userAtserver {
+    int userId;
     int idusersoc;
     QTcpSocket *clientSocket;
 };
@@ -40,10 +41,11 @@ private slots:
     void on_stoping_clicked();
     void newuser();
     void slotReadClient();
-    void sendTouser(MessageProtocol &message, int dialogID);
+    void sendTouser(MessageProtocol &message);
 
 signals:
-    void sendMessage(MessageProtocol &message, int dialogID);
+    void sendMessage(MessageProtocol &message);
+
 private:
     Ui::MainWindow *ui;
     QTcpSocket *_sok, *clientSocket;
