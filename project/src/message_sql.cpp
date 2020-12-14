@@ -3,13 +3,6 @@
 #include <string>
 
 #include "../include/sql.h"
-#include "../include/interface.h"
-
-MessageManagerSQL::MessageManagerSQL() {
-    if (get_db() == nullptr) {
-        Db = create_data_base();
-    }
-}
 
 int MessageManagerSQL::callback_vec(void *NotUsed, int argc, char **argv, char **azColName) {
     std::vector<Message> *msg = (std::vector<Message>*)NotUsed;
@@ -91,7 +84,7 @@ Message MessageManagerSQL::post_message(const Message &message) {
     return msg;
 }
 
-int MessageManagerSQL::getMessageId() {
+int MessageManagerSQL::get_message_id() {
     int rc;
     sqlite3_open("data_base.db", &Db);
     sql = "SELECT ID FROM MESSAGE ORDER BY ID DESC LIMIT 1;";

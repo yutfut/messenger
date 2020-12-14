@@ -1,7 +1,7 @@
 #include <string>
 #include <sqlite3.h>
 #include <iostream>
-#include "../project/include/sql.h"
+#include "sql.h"
 
 //SQL
 
@@ -36,7 +36,11 @@ sqlite3* SQL::create_data_base() {
     sql = "CREATE TABLE USER(" \
     "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
     "NAME VARCHAR(16)," \
-    "LOGIN VARCHAR(32));";
+    "LOGIN VARCHAR(32)," \
+    "SALT VARCHAR(32)," \
+    "PASSWORD_HASH VARCHAR(32)," \
+    "APPROVED INTEGER," \
+    "APPROVE_CODE  INTEGER);";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"USER", zErrMsg);
 

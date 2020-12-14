@@ -11,8 +11,6 @@ class SQL{
     sqlite3* create_data_base();
     static void check(int k, const std::string s, char*zErrMsg);
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);
-
-    // Геттер
     sqlite3* get_db();
  protected:
     sqlite3 *Db = nullptr;
@@ -20,11 +18,11 @@ class SQL{
 
 class UserManagerSQL : public IUserManager, public SQL {
 public:
-    // Конструктор
     UserManagerSQL();
-
     User get_user (const std::string& login1) override;
+    User get_user (idType id) override;
     User create_user (const std::string &name, const std::string &login) override;
+    User set_user_approved (const std::string& login, int approved) override;
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 private:
     const char *sql;
@@ -38,9 +36,6 @@ struct Idr {
 
 class DialogManagerSQL : public IDialogManager, public SQL{
 public:
-    // Конструктор
-    DialogManagerSQL();
-
     idType create_dlg (idType user_id, std::vector<idType> massive_customers) override;
     int add_members(idType dialog_id, std::vector<idType> members_to_add) override;
     std::vector<Dialog> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
@@ -67,12 +62,10 @@ struct LastMessage{
 
 class MessageManagerSQL: public IMessageManager, public SQL{
 public:
-    // Конструктор
-    MessageManagerSQL();
 
     Message post_message(const Message& message) override;
     std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, idType limit) override;
-    int getMessageId() override;
+    int get_message_id() override;
     static int callback_vec(void *NotUsed, int argc, char **argv, char **azColName);
     static idType callback_id(void *NotUsed, int argc, char **argv, char **azColName);
     static int callback_mes(void *NotUsed, int argc, char **argv, char **azColName);

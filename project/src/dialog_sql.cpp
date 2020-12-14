@@ -4,14 +4,6 @@
 #include <cstdlib>
 
 #include "../include/sql.h"
-#include "../include/interface.h"
-
-// DIALOGUES
-DialogManagerSQL::DialogManagerSQL() {
-    if (Db == nullptr) {
-        Db = create_data_base();
-    }
-}
 
 int DialogManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColName) {
     std::vector<idType> *dlg_members = (std::vector<idType>*)NotUsed;
@@ -65,9 +57,14 @@ idType DialogManagerSQL::create_dlg(idType user_id, std::vector<idType> massive_
 
 int DialogManagerSQL::add_members(idType dialog_id, std::vector<idType> members_to_add) {
     int rc;
+    sqlite3_stmt * insert_stmt;
     sqlite3_open("data_base.db", &Db);
     for (unsigned int i = 0; i < members_to_add.size(); ++i) {
-        sql = sqlite3_mprintf("INSERT INTO DIALOG_MEMBERS(DIALOG_ID, MEMBER_ID) VALUES (%d, %d)", dialog_id, members_to_add[i]);
+        //sql = sqlite3_mprintf("INSERT INTO DIALOG_MEMBERS(DIALOG_ID, MEMBER_ID) VALUES (%d, %d)", dialog_id, members_to_add[i]);
+        /*sql = "INSERT INTO DIALOG_MEMBERS(DIALOG_ID, MEMBER_ID) VALUES (?, ?)";
+        sqlite3_prepare_v2(Db,sql,-1,&insert_stmt, nullptr);
+        sqlite3_bind_int(insert_stmt,1,dialog_id);
+        sqlite3_bind_int(insert_stmt,2,members_to_add[i]);*/
         rc = sqlite3_exec(Db,sql, &DialogManagerSQL::callback, &dlg_members, nullptr);
         if (rc != SQLITE_OK) {
             std::cout << sqlite3_errmsg(Db);

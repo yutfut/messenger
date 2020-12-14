@@ -11,7 +11,7 @@ Message MessageManagerMap::post_message(const Message& message) {
     return message;
 }
 
-int MessageManagerMap::getMessageId() {
+int MessageManagerMap::get_message_id() {
     return id;
 }
 

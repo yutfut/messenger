@@ -12,7 +12,7 @@ public:
     // возвращает сообщения диалога начиная с last_msg_id, количество определяется лимитом
     virtual Message post_message (const Message& message) = 0;
     // регистрирует сообщение, вносит в бд
-    virtual int getMessageId() = 0;
+    virtual int get_message_id() = 0;
     // возвращает айди сообщения(последнего)
 };
 
@@ -20,8 +20,11 @@ class IUserManager {
 public:
     virtual User get_user (const std::string& login) = 0;
     // возвращает айди, имя и логин юзера по логину
+    virtual User get_user (idType id) = 0;
+    // возвращает айди, имя и логин юзера по айди
     virtual User create_user (const std::string& name, const std::string& login) = 0;
     //создает юзера, вносит в бд
+    virtual User set_user_approved (const std::string& login, int approved) = 0;
 };
 
 class IDialogManager {

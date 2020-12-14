@@ -19,10 +19,10 @@ int DialogManagerMap::add_members(idType dialog_id, std::vector<idType> members_
     return 0;
 }
 
-std::vector<idType> DialogManagerMap::get_users_in_dlg(idType dialog_id, idType user_id) {
+std::vector<idType> DialogManagerMap::get_users_in_dlg(idType dialog_id) {
     std::vector<idType> v;
     for(unsigned int i = 0; i < members_dlg_id.size(); ++i) {
-        if (members_dlg_id[i].first == dialog_id && members_dlg_id[i].second != user_id) {
+        if (members_dlg_id[i].first == dialog_id) {
             v.push_back(members_dlg_id[i].second);
         }
     }
