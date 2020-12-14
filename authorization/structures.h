@@ -1,11 +1,12 @@
-#ifndef PROJECT_STRUCTURES_H
-#define PROJECT_STRUCTURES_H
+#ifndef STRUCTURES_H
+#define STRUCTURES_H
 #include <string>
 
 // Types and structures
 
 typedef int idType;
 typedef std::string timeType;
+typedef std::string strType;
 
 /*struct Message_content { std::string text; };*/
 
@@ -13,8 +14,10 @@ struct User {
     idType id;
     std::string name;
     std::string login;
-    std::string salt;
-    std::string passwordHash;
+    strType salt;
+    strType passwordHash;
+    bool approved;
+    int approve_code;
 };
 
 struct Message {
@@ -29,10 +32,10 @@ struct Dialog {
     idType id;
 };
 
-struct dialogue_members {
+struct Dialogue_members {
     idType id;
     idType  dialog_id;
     idType member_id;
 };
 
-#endif //PROJECT_STRUCTURES_H
+#endif //STRUCTURES_H

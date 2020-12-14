@@ -3,3 +3,5 @@ build
 main.cpp
 CMakeLists.txt
 .idea
+build-network-Desktop-Debug/
+build-QTcp_client-Desktop-Debug/
