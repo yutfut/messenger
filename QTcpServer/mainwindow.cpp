@@ -11,10 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     _sok = new QTcpSocket(this);
     tcp_Server = new QTcpServer();
 
-//    UserManagerSQL();
-//    DialogManagerSQL();
-//    MessageManagerSQL();
-
 }
 
 MainWindow::~MainWindow() {
@@ -170,6 +166,7 @@ void MainWindow::slotReadClient()
 //Метод отправляет сообщение конкретному юзеру (юзерам)
 void MainWindow::sendTouser(MessageProtocol &message) {
     // Отправитель
+    bool isFound = false;
     int senderId = message.getSenderId();
 
     for(size_t i = 0; i < state.size(); ++i) {
@@ -178,8 +175,7 @@ void MainWindow::sendTouser(MessageProtocol &message) {
             QString m = message.convert();
 
             int j = 0;
-            bool isFound = false;
-            for(j=0; j < SClients.size(); ++j) {
+            for(j = 0; j < SClients.size(); ++j) {
                 if (SClients[j].userId == state[i]) {
                     isFound = true;
                     break;
@@ -193,9 +189,22 @@ void MainWindow::sendTouser(MessageProtocol &message) {
             QDataStream out(SClients[j].clientSocket);
             out.setVersion(QDataStream::Qt_5_15);
             out << m;
+        } else if (state[i] == senderId) {
+            continue;
         } else {
             qDebug() << "Невозможно отправить сообщение!!!";
         }
+    }
+
+    // Если пользователь в сети, то ему отправилось сообщение, мы же отправляем сендеру его сообщение
+    if (isFound) {
+        // Формируем специальное серверное сообщение
+        MessageProtocol readingMessage(message.getDialogId(), "server", "@server", "/reading");
+
+        // Отправляем специальный месседж, что сообщение было доставлено получателю
+        QDataStream out(clientSocket);
+        QString readingMess = readingMessage.convert();
+        out << readingMess;
     }
 }
 
