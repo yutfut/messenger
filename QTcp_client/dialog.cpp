@@ -70,7 +70,11 @@ void Dialog::onSokReadyRead() {
                 }
 
                 if (message.isValid()) {
-                    if (!message.getMessage().contains("/hello")) {
+                    QString textMessage = message.getMessage();
+                    if (textMessage.contains("/reading")) {
+                        // Здесь надо реализовать фичу получения юзера
+                        addToLog(message.getSenderUser() + ": " + "User has read your message", Qt::gray);
+                    } else if (!textMessage.contains("/hello")) {
                         addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
                     }
                     if (message.isFilesInMessage()) {
@@ -97,6 +101,7 @@ void Dialog::on_pbt_Send_clicked() {
             QString textFromInput = ui->message_Edit->text();
 
             // Это всего лишь пример, пока авторизация не сделана
+//            MessageProtocol message(dialogId, "Andrey", "@und_dayk", textFromInput, 3);
             MessageProtocol message(dialogId, "Sergey", "@yut_fut", textFromInput, 2);
 //            MessageProtocol message(dialogId, "Artem", "@bus_artem", textFromInput, 1);
 
@@ -133,6 +138,7 @@ void Dialog::on_attachmentBtn_clicked() {
 
 void Dialog::onSokConnected() {
     // Издержки тестирования
+//    MessageProtocol message(dialogId, "Andrey", "@und_dayk", "/hello", 3);
     MessageProtocol message(dialogId, "Sergey", "@yut_fut", "/hello", 2);
 //  MessageProtocol message(dialogId, "Artem", "@bus_artem", "/hello", 1);
 
