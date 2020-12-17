@@ -1,21 +1,19 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
+
 #include <string>
 
 // Types and structures
 
 typedef int idType;
 typedef std::string timeType;
-typedef std::string strType;
-
-/*struct Message_content { std::string text; };*/
 
 struct User {
     idType id;
     std::string name;
     std::string login;
-    strType salt;
-    strType passwordHash;
+    std::string salt;
+    std::string password_hash;
     bool approved;
     int approve_code;
 };
@@ -24,7 +22,7 @@ struct Message {
     idType id;
     idType sender_id;
     idType dialog_id;
-    std::string text; // Message_content content;
+    std::string text;
     timeType time;
 };
 

@@ -28,14 +28,13 @@ SOURCES += \
     mimetext.cpp \
     quotedprintable.cpp \
     smtpclient.cpp \
-    user_map.cpp
+    user_sql.cpp
 
 HEADERS += \
     authorization.h \
     emailaddress.h \
     interface.h \
     mainwindow.h \
-    map.h \
     mimeattachment.h \
     mimecontentformatter.h \
     mimefile.h \
@@ -48,6 +47,7 @@ HEADERS += \
     quotedprintable.h \
     smtpclient.h \
     smtpexports.h \
+    sql.h \
     structures.h
 
 FORMS += \

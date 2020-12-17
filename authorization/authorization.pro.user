@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.13.3, 2020-12-13T21:42:08. -->
+<!-- Written by QtCreator 4.13.3, 2020-12-17T22:52:25. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -323,8 +323,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/parviz/authorization/authorization.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/parviz/authorization/authorization.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">authorization2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/parviz/TP_C/messenger/authorization/authorization.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/parviz/TP_C/messenger/authorization/authorization.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>

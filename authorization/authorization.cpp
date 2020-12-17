@@ -7,8 +7,8 @@ int authorization::login(QString mail, QString password) {
         return INCORRECT_INPUT;
     }
 
-    UserManagerMap umm;
-    User user = umm.get_user(mail.toStdString());
+    UserManagerSQL um;
+    User user = um.get_user(mail.toStdString());
     if (user.login == "") {
         return NOT_REGISTRATED;
     }
@@ -22,18 +22,27 @@ int authorization::login(QString mail, QString password) {
 
 bool authorization::compare_password(const User user, QString password) {
     QByteArray salted_password (password.toStdString().c_str());
-    salted_password.append(user.salt.c_str());
-    QByteArray hashed_salted_password = QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex();
+//    salted_password.append(user.salt.c_str());
+    QByteArray hashed_salted_password = QCryptographicHash::hash(
+                QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex().append(user.salt.c_str()),
+                QCryptographicHash::Sha256).toHex();
     return hashed_salted_password.toStdString() == password.toStdString();
 }
+
+//bool authorization::compare_password(const User user, QString password) {
+//    QByteArray salted_password (password.toStdString().c_str());
+//    salted_password.append(user.salt.c_str());
+//    QByteArray hashed_salted_password = QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex();
+//    return hashed_salted_password.toStdString() == password.toStdString();
+//}
 
 int authorization::approve_user(QString mail, int code) {
     if (mail == nullptr) {
         return INCORRECT_INPUT;
     }
 
-    UserManagerMap umm;
-    User user = umm.get_user(mail.toStdString());
+    UserManagerSQL um;
+    User user = um.get_user(mail.toStdString());
 
     if (user.login == "") {
         return NOT_REGISTRATED;
@@ -43,20 +52,18 @@ int authorization::approve_user(QString mail, int code) {
         return INCORRECT_CODE;
     }
 
-    /*
-    Set appproved
-    */
+    um.set_user_approved(mail.toStdString(), 1);
 
     return user.id;
 }
 
-int authorization::sign_up(QString mail, QString password) {
+int authorization::sign_up(QString mail, QString password, QString name) {
     if (mail == nullptr || password == nullptr) {
         return INCORRECT_INPUT;
     }
 
-    UserManagerMap umm;
-    User user = umm.get_user(mail.toStdString());
+    UserManagerSQL um;
+    User user = um.get_user(mail.toStdString());
 
     if (user.login != "") {
         return NOT_REGISTRATED;
@@ -73,15 +80,15 @@ int authorization::sign_up(QString mail, QString password) {
     MimeMessage message;
     message.setSender(new EmailAddress("alievz2019@gmail.com", "MESSENGER"));
     message.addRecipient(new EmailAddress(mail, "Recipient"));
-    message.setSubject("Registration code..........");
+    message.setSubject("Registration code");
 
-    int registration_code = 123456;
-    /*
-    Generate registration code
-    */
+    int registration_code = (qrand() % 1000000);
+    if (registration_code < 100000) {
+        registration_code += 100000;
+    }
 
     MimeText text;
-    text.setText("Your registration code is: " + registration_code);
+    text.setText(QString("Your registration code is: ") + registration_code);
     message.addPart(&text);
 
     smtp.connectToHost();
@@ -91,16 +98,18 @@ int authorization::sign_up(QString mail, QString password) {
 
     QString salt = QUuid::createUuid().toString();
     salt.remove(QRegularExpression("{|}|-")); // only hex numbers
-    user.salt = salt.toStdString();
+//    user.salt = salt.toStdString();
 
+//    QByteArray salted_password (password.toStdString().c_str());
+//    salted_password.append(salt.toStdString().c_str());
+//    QByteArray hashed_salted_password = QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex();
     QByteArray salted_password (password.toStdString().c_str());
-    salted_password.append(salt.toStdString().c_str());
-    QByteArray hashed_salted_password = QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex();
-    user.passwordHash = salted_password.toStdString();
+    QByteArray hashed_salted_password = QCryptographicHash::hash(
+                QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex().append(password.toStdString().c_str()),
+                QCryptographicHash::Sha256).toHex();
+//    user.passwordHash = salted_password.toStdString();
     
-    /*
-    Add user into DB
-    */
+    um.create_user(mail.toStdString(), name.toStdString(), hashed_salted_password.toStdString(), salt.toStdString());
 
-    return user.id;
+    return um.get_user(mail.toStdString()).id;
 }
