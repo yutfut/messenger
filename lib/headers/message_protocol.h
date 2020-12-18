@@ -27,11 +27,14 @@ public:
     [[nodiscard]] QString getSenderUser() const;
     [[nodiscard]] QString getNickname() const;
     [[nodiscard]] QString getMessage() const;
+    [[nodiscard]] QString getTime() const;
     [[nodiscard]] int getSenderId() const;
 
     void setMessage(QString &message);
     void setUserId(int id);
     void setDialogId(int id);
+    void setTime(QString time);
+    void setSenderUser(QString &user);
     void setFile(QList<QPair<QString, QByteArray>> files);
     void removeFiles();
 
@@ -45,7 +48,7 @@ private:
 
     QJsonObject finalObject;
 
-    void fillData(const QString &senderUser, const QString &nickName, const QString &message);
+    void fillData(const QString &senderUser, const QString &nickName, const QString &message, QTime &currentTime);
 };
 
 #endif // MESSAGEPROTOCOL_H

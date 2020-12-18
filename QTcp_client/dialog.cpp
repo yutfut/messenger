@@ -11,7 +11,7 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     disableButtons(true);
 
     socket = new QTcpSocket(this);
-    isButtonClicked = false;
+    stateRecord = false;
 
     //  В дальнейшем надо эти данные хранить в спец-файле (JSON)
     userId = 1;
@@ -21,8 +21,6 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     connect(socket, &QTcpSocket::connected, this, &Dialog::onSokConnected);
     connect(socket, &QTcpSocket::disconnected, this, &Dialog::onSokDisconnected);
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(onSokDisplayError(QAbstractSocket::SocketError)));
-
-    QThread thr(parent);
 }
 
 Dialog::~Dialog() {
@@ -79,12 +77,12 @@ void Dialog::onSokReadyRead() {
                     QString textMessage = message.getMessage();
                     if (textMessage.contains("/reading")) {
                         // Здесь надо реализовать фичу получения юзера
-                        addToLog("Прочитано", Qt::gray);
+                        addToLog("Прочитано", message.getTime(), Qt::gray);
                         ui->userStatus->setText("В сети");
                     } else if (textMessage.contains("/bye")) {
                         ui->userStatus->setText("Не в сети");
                     } else if (!textMessage.contains("/hello")) {
-                        addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
+                        addToLog(message.getSenderUser() + ": " + message.getMessage(), message.getTime(), Qt::blue);
                     }
 
                     if (message.isFilesInMessage()) {
@@ -125,7 +123,7 @@ void Dialog::on_pbt_Send_clicked() {
                 messageTosent = message.convert();
 
                 socketStream << messageTosent;
-                addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::yellow);
+                addToLog(message.getSenderUser() + ": " + message.getMessage(), message.getTime(), Qt::blue);
             } else {
                 displayError("Incorrect Data!!!");
             }
@@ -151,13 +149,16 @@ void Dialog::onSokConnected() {
     sendServiceMessage(message);
 
     disableButtons(true, false);
-    addToLog("Connected to"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),Qt::green);
+    ui->lwLog->clear();
+    addToLog("Connected to"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),
+             QTime::currentTime().toString(), Qt::green);
 }
 
 void Dialog::onSokDisconnected() {
     ui->pbConnect->setEnabled(true);
     ui->pbDisconnect->setEnabled(false);
-    addToLog("Disconnected from"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()), Qt::green);
+    addToLog("Disconnected from"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),
+             QTime::currentTime().toString(), Qt::green);
 
     disableButtons(true);
 }
@@ -174,7 +175,7 @@ void Dialog::on_pbDisconnect_clicked() {
 }
 
 void Dialog::displayError(const QString &error) {
-    addToLog(error, Qt::red);
+    addToLog(error, QTime::currentTime().toString(), Qt::red);
     QMessageBox::critical(this, "Client error!", error);
 }
 
@@ -229,8 +230,8 @@ void Dialog::sendServiceMessage(QString &textMessage) {
     ui->pbDisconnect->setEnabled(true);
 }
 
-void Dialog::addToLog(QString text, QColor color) {
-    QString message = QString(QTime::currentTime().toString() + " " + text);
+void Dialog::addToLog(QString text, QString time, QColor color) {
+    QString message = QString(time + " " + text);
 
     ui->lwLog->setTextColor(color);
     ui->lwLog->append(message);
@@ -241,5 +242,16 @@ void Dialog::on_message_Edit_textEdited(const QString &arg1) {
         disableButtons(false, false);
     } else {
         ui->pbt_Send->setDisabled(true);
+    }
+}
+
+
+void Dialog::on_voiceButton_clicked() {
+    if (!stateRecord) {
+        qDebug() << "Запись пошла";
+        stateRecord = !stateRecord;
+    } else {
+        qDebug() << "Запись остановлена";
+        stateRecord = !stateRecord;
     }
 }

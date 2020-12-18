@@ -5,7 +5,9 @@ MessageProtocol::MessageProtocol(const int &dialogId, const QString &senderUser,
     finalObject.insert(QString("dialogId"), QJsonValue(dialogId));
     finalObject.insert(QString("senderId"), QJsonValue(senderId));
 
-    fillData(senderUser, nickName, message);
+
+    auto currentTime = QTime::currentTime();
+    fillData(senderUser, nickName, message, currentTime);
 
     lengthSenderUser = finalObject["senderUser"].toString().size();
     lengthNickname = finalObject["nickName"].toString().size();
@@ -24,7 +26,8 @@ MessageProtocol::MessageProtocol(QString &protocolMessage) {
 MessageProtocol::MessageProtocol(const QString &senderUser, const QString &nickName, const QString &message) {
 
     // Загнать в оотдельный метод
-    fillData(senderUser, nickName, message);
+    QTime currentTime = QTime::currentTime();
+    fillData(senderUser, nickName, message, currentTime);
 
     lengthNickname = nickName.size();
     lengthSenderUser = senderUser.size();
@@ -48,6 +51,10 @@ QString MessageProtocol::getNickname() const {
 
 QString MessageProtocol::getMessage() const {
     return finalObject["message"].toString();
+}
+
+QString MessageProtocol::getTime() const {
+    return finalObject["time"].toString();
 }
 
 bool MessageProtocol::isValid() {
@@ -89,9 +96,10 @@ QList<QPair<QString, QByteArray>> MessageProtocol::getFiles() {
     return toReturn;
 }
 
-void MessageProtocol::fillData(const QString &senderUser, const QString &nickName, const QString &message) {
+void MessageProtocol::fillData(const QString &senderUser, const QString &nickName, const QString &message, QTime &currentTime) {
     finalObject.insert(QString("nickName"), QJsonValue(nickName));
     finalObject.insert(QString("senderUser"), QJsonValue(senderUser));
+    finalObject.insert(QString("time"), QJsonValue(currentTime.toString()));
     finalObject.insert(QString("message"), QJsonValue(message));
 }
 
@@ -101,6 +109,14 @@ void MessageProtocol::setUserId(int id) {
 
 void MessageProtocol::setDialogId(int id) {
     finalObject["dialogId"] = id;
+}
+
+void MessageProtocol::setTime(QString time) {
+    finalObject["time"] = time;
+}
+
+void MessageProtocol::setSenderUser(QString &user) {
+    finalObject["senderUser"] = user;
 }
 
 void MessageProtocol::setFile(QList<QPair<QString, QByteArray>> files) {

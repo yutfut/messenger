@@ -43,15 +43,18 @@ private slots:
 
     void on_attachmentBtn_clicked();
 
+
+    void on_voiceButton_clicked();
+
 private:
     Ui::Dialog *ui;
     QTcpSocket *socket;
-    bool isButtonClicked;
+    bool stateRecord;
     QString filePath;
     int userId;
     int dialogId;
 
-    void addToLog(QString text, QColor color = Qt::black);
+    void addToLog(QString text, QString time, QColor color = Qt::black);
     void displayError(const QString &error);
     void disableButtons(const bool state_1, const bool state_2 = true);
     void addFile(MessageProtocol &protocol, QString &filePath);
