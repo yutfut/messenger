@@ -147,9 +147,27 @@ void MainWindow::slotReadClient()
                     int sockDescr = clientSocket->socketDescriptor();
                     userAtserver newUser = {message.getSenderId(), sockDescr, clientSocket};
                     SClients.push_back(newUser);
+
+                    // Новые изменения
+                    auto textsMessages = messageManager.get_messages(dialogId,messageManager.getMessageId(), 10);
+                    sendMessageNewUser(message, textsMessages, clientSocket);
+
                     qDebug() << "New user:"<<message.getSenderId();
-                }
-                else {
+                } else if (!QString::compare(message.getMessage(), "/bye", Qt::CaseInsensitive)) {
+                      // Удаляем юзера из списка активных пользователей
+                    size_t i = 0;
+                    for(i = 0; i < state.size(); ++i) {
+                        // Поиском сравниваем список
+                        if (SClients[i].userId == message.getSenderId()) {
+                            break;
+                        }
+                    }
+
+                    // Убираем его
+                    SClients.removeAt(i);
+
+                    emit sendMessage(message);
+                } else {
                     emit sendMessage(message);
                 }
 
@@ -208,6 +226,25 @@ void MainWindow::sendTouser(MessageProtocol &message) {
     }
 }
 
+// Если у нас новый юзер, то отгружаем ему последние 10 сообщений
+void MainWindow::sendMessageNewUser(MessageProtocol &protocol, std::vector<Message> messages, QTcpSocket *userSocket) {
+    for(size_t i = 0; i < messages.size(); ++i) {
+        QString message = QString::fromStdString(messages[i].text);
+        QString senderUser = QString::fromStdString(userManager.get_user(messages[i].sender_id).name);
+        QString time = QString::fromStdString(messages[i].time);
+
+        protocol.setMessage(message);
+        protocol.setUserId(messages[i].sender_id);
+        protocol.setSenderUser(senderUser);
+        protocol.setDialogId(messages[i].dialog_id);
+        protocol.setTime(time);
+
+        QDataStream out(userSocket);
+        message = protocol.convert();
+        out << message;
+    }
+}
+
 // Метод обавляет пользователя в БД
 int MainWindow::addUsertodatabase(MessageProtocol &messageProtocol) {
     // Никнейм + имя
@@ -231,10 +268,11 @@ int MainWindow::addUsertodatabase(MessageProtocol &messageProtocol) {
 // Метод добавляет сообщение в БД
 int MainWindow::addMessagetodatabase(MessageProtocol &messageProtocol, int userID, int &dialogID) {
     int messageId = messageManager.getMessageId();
-    Message message = {messageId, userID, dialogID, messageProtocol.getMessage().toStdString(),
-                      QTime::currentTime().toString().toStdString()};
-
-    messageManager.post_message(message);
-
+    auto textMessage = messageProtocol.getMessage();
+    if (textMessage.compare("/hello") || textMessage.compare("/bye")) {
+        Message message = {messageId, userID, dialogID, messageProtocol.getMessage().toStdString(),
+                          QTime::currentTime().toString().toStdString()};
+        messageManager.post_message(message);
+    }
     return 0;
 }

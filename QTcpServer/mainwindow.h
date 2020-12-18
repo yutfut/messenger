@@ -42,6 +42,7 @@ private slots:
     void newuser();
     void slotReadClient();
     void sendTouser(MessageProtocol &message);
+    void sendMessageNewUser(MessageProtocol &protocol, std::vector<Message>messages, QTcpSocket *userSocket);
 
 signals:
     void sendMessage(MessageProtocol &message);
