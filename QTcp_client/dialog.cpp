@@ -21,6 +21,8 @@ Dialog::Dialog(QWidget *parent) :QDialog(parent),ui(new Ui::Dialog) {
     connect(socket, &QTcpSocket::connected, this, &Dialog::onSokConnected);
     connect(socket, &QTcpSocket::disconnected, this, &Dialog::onSokDisconnected);
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(onSokDisplayError(QAbstractSocket::SocketError)));
+
+    QThread thr(parent);
 }
 
 Dialog::~Dialog() {
@@ -28,6 +30,10 @@ Dialog::~Dialog() {
 
     delete socket;
     delete ui;
+}
+
+QTcpSocket *Dialog::getSocket() {
+    return socket;
 }
 
 void Dialog::onSokDisplayError(QAbstractSocket::SocketError socketError) {
@@ -73,10 +79,14 @@ void Dialog::onSokReadyRead() {
                     QString textMessage = message.getMessage();
                     if (textMessage.contains("/reading")) {
                         // Здесь надо реализовать фичу получения юзера
-                        addToLog(message.getSenderUser() + ": " + "User has read your message", Qt::gray);
+                        addToLog("Прочитано", Qt::gray);
+                        ui->userStatus->setText("В сети");
+                    } else if (textMessage.contains("/bye")) {
+                        ui->userStatus->setText("Не в сети");
                     } else if (!textMessage.contains("/hello")) {
                         addToLog(message.getSenderUser() + ": " + message.getMessage(), Qt::blue);
                     }
+
                     if (message.isFilesInMessage()) {
                         filePath = QFileDialog::getSaveFileName(this, tr("Save File"), QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
                         saveFiles(message, filePath);
@@ -137,21 +147,11 @@ void Dialog::on_attachmentBtn_clicked() {
 }
 
 void Dialog::onSokConnected() {
-    // Издержки тестирования
-//    MessageProtocol message(dialogId, "Andrey", "@und_dayk", "/hello", 3);
-    MessageProtocol message(dialogId, "Sergey", "@yut_fut", "/hello", 2);
-//  MessageProtocol message(dialogId, "Artem", "@bus_artem", "/hello", 1);
-
-    QDataStream stream(socket);
-    stream.setVersion(QDataStream::Qt_5_15);
-    QString convertMessage = message.convert();
-    stream << convertMessage;
-
-    ui->pbConnect->setEnabled(false);
-    ui->pbDisconnect->setEnabled(true);
-    addToLog("Connected to"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),Qt::green);
+    QString message = "/hello";
+    sendServiceMessage(message);
 
     disableButtons(true, false);
+    addToLog("Connected to"+socket->peerAddress().toString()+":"+QString::number(socket->peerPort()),Qt::green);
 }
 
 void Dialog::onSokDisconnected() {
@@ -167,6 +167,9 @@ void Dialog::on_pbConnect_clicked() {
 }
 
 void Dialog::on_pbDisconnect_clicked() {
+    QString message = "/bye";
+    sendServiceMessage(message);
+
     socket->disconnectFromHost();
 }
 
@@ -209,6 +212,21 @@ void Dialog::saveFiles(MessageProtocol &protocol, QString &filePath) {
         }
         file.close();
     }
+}
+
+void Dialog::sendServiceMessage(QString &textMessage) {
+    // Издержки тестирования
+//    MessageProtocol message(dialogId, "Andrey", "@und_dayk", textMessage, 3);
+    MessageProtocol message(dialogId, "Sergey", "@yut_fut", textMessage, 2);
+//  MessageProtocol message(dialogId, "Artem", "@bus_artem", textMessage, 1);
+
+    QDataStream stream(socket);
+    stream.setVersion(QDataStream::Qt_5_15);
+    QString convertMessage = message.convert();
+    stream << convertMessage;
+
+    ui->pbConnect->setEnabled(false);
+    ui->pbDisconnect->setEnabled(true);
 }
 
 void Dialog::addToLog(QString text, QColor color) {
