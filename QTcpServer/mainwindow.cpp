@@ -18,7 +18,7 @@ void MainWindow::on_starting_clicked()
 {
     tcpServer = new QTcpServer(this);
     connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newuser()));
-    if (!tcpServer->listen(QHostAddress::Any, 1234) && server_status==0) {
+    if (!tcpServer->listen(QHostAddress("192.168.1.64"), 6000) && server_status==0) {
         qDebug() <<  QObject::tr("Unable to start the server: %1.").arg(tcpServer->errorString());
         ui->textinfo->append(tcpServer->errorString());
     } else {
