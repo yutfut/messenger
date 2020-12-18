@@ -4,13 +4,27 @@
 #include <QMainWindow>
 #include <QtNetwork>
 #include <QTcpSocket>
+#include <QTcpServer>
 #include <QObject>
 #include <QByteArray>
 #include <QDebug>
 
+#include <vector>
+
+#include "../lib/headers/message_protocol.h"
+
+#include "../project/include/sql.h"
+
+#define NO_SENDER_ID -1
+
 namespace Ui {
     class MainWindow;
 }
+struct userAtserver {
+    int userId;
+    int idusersoc;
+    QTcpSocket *clientSocket;
+};
 
 class QTcpServer;
 
@@ -27,12 +41,26 @@ private slots:
     void on_stoping_clicked();
     void newuser();
     void slotReadClient();
+    void sendTouser(MessageProtocol &message);
+    void sendMessageNewUser(MessageProtocol &protocol, std::vector<Message>messages, QTcpSocket *userSocket);
+
+signals:
+    void sendMessage(MessageProtocol &message);
 
 private:
     Ui::MainWindow *ui;
-    QTcpServer *tcpServer;
+    QTcpSocket *_sok, *clientSocket;
+    QTcpServer *tcp_Server;
     int server_status;
-    QMap<int,QTcpSocket *> SClients;
+    QList<userAtserver> SClients;
+    std::vector<int> state;
+
+    UserManagerSQL userManager;
+    DialogManagerSQL dialogManager;
+    MessageManagerSQL messageManager;
+
+    int addUsertodatabase(MessageProtocol &messageProtocol);
+    int addMessagetodatabase(MessageProtocol &messageProtocol, int userID, int &dialogID);
 };
 
 #endif // MAINWINDOW_H
