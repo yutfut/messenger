@@ -40,7 +40,8 @@ sqlite3* SQL::create_data_base() {
     "SALT VARCHAR(32)," \
     "PASSWORD_HASH VARCHAR(32)," \
     "APPROVED INTEGER," \
-    "APPROVE_CODE  INTEGER);";
+    "APPROVE_CODE INTEGER DEFAULT 0," \
+    "FLAG_DELETE_USER INTEGER DEFAULT 0);";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"USER", zErrMsg);
 
@@ -57,6 +58,7 @@ sqlite3* SQL::create_data_base() {
     "DIALOG_ID INTEGER," \
     "MESSAGE_TEXT TEXT," \
     "TIME VARCHAR(8)," \
+    "FLAG_DELETE_MESSAGE INTEGER," \
     "FOREIGN KEY(SENDER_ID) REFERENCES USER(ID)" \
     "FOREIGN KEY(DIALOG_ID) REFERENCES DIALOG(ID));";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
@@ -71,9 +73,5 @@ sqlite3* SQL::create_data_base() {
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"DIALOG_MEMBERS", zErrMsg);
     sqlite3_close(Db);
-    return Db;
-}
-
-sqlite3* SQL::get_db() {
     return Db;
 }

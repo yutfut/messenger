@@ -1,8 +1,10 @@
 #include <string>
 #include <sqlite3.h>
 #include <iostream>
-
 #include "../include/sql.h"
+#define USER_DELETED -8
+#define USER_REGISTERED -10
+#define USER_NOT_FOUND -12
 
 //USER
 UserManagerSQL::UserManagerSQL() {
@@ -37,22 +39,33 @@ int UserManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColN
             case 6:
                 user->approve_code = atoi(argv[i]);
                 break;
+            case 7:
+                user->flag_delete_ser = atoi(argv[i]);
+                break;
         }
     }
     return 0;
 }
 
+int UserManagerSQL::callback_delete(void *NotUsed, int argc, char **argv, char **azColName) {
+    int i;
+    int *user_status = (int*) NotUsed;
+    if (atoi(argv[0]) == 1) {
+        *user_status = USER_DELETED;
+        //std::cout << "status: USER DELETED";
+    } else if (atoi(argv[0]) == 0) {
+        *user_status = USER_REGISTERED;
+        //std::cout << "status: USER REGISTERED";
+    } else {
+        *user_status = USER_NOT_FOUND;
+        //std::cout << "status: USER NOT FOUND";
+    }
+}
+
 User UserManagerSQL::get_user(const std::string &login1) {
     int rc;
-    sqlite3_stmt* select_stmt;
     sqlite3_open("data_base.db", &Db);
-    sql =  sqlite3_mprintf("SELECT * FROM USER WHERE LOGIN = '%s';",login1.c_str());
-    /*sql = "SELECT * FROM USER WHERE LOGIN = ?";
-    rc = sqlite3_prepare_v2(Db,sql,-1,&select_stmt, nullptr);
-    if (rc != SQLITE_OK) {
-        std::cout << sqlite3_errmsg(Db);
-    }
-    sqlite3_bind_text(select_stmt,1,login1.c_str(),-1,SQLITE_STATIC);*/
+    sql =  sqlite3_mprintf("SELECT * FROM USER WHERE LOGIN = '%s' AND FLAG_DELETE_USER <> 1;",login1.c_str());
     rc = sqlite3_exec(Db, sql, &UserManagerSQL::callback, &user, nullptr);
     if (rc != SQLITE_OK) {
         std::cout << sqlite3_errmsg(Db);
@@ -63,9 +76,8 @@ User UserManagerSQL::get_user(const std::string &login1) {
 
 User UserManagerSQL::get_user(idType id) {
     int rc;
-    sqlite3_stmt* select_stmt;
     sqlite3_open("data_base.db", &Db);
-    sql =  sqlite3_mprintf("SELECT * FROM USER WHERE LOGIN = '%d';",id);
+    sql =  sqlite3_mprintf("SELECT * FROM USER WHERE ID = '%d' AND FLAG_DELETE_USER <> 1;",id);
     rc = sqlite3_exec(Db, sql, &UserManagerSQL::callback, &user, nullptr);
     if (rc != SQLITE_OK) {
         std::cout << sqlite3_errmsg(Db);
@@ -74,10 +86,10 @@ User UserManagerSQL::get_user(idType id) {
     return user;
 }
 
-User UserManagerSQL::create_user(const std::string &name, const std::string &login) {
-    sqlite3_stmt* insert_stmt;
+User UserManagerSQL::create_user(const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash) {
     sqlite3_open("data_base.db", &Db);
-    sql = sqlite3_mprintf("INSERT INTO USER(NAME, LOGIN) VALUES ('%s','%s');", name.c_str(), login.c_str());
+    sql = sqlite3_mprintf("INSERT INTO USER(NAME, LOGIN, SALT, PASSWORD_HASH, APPROVED, FLAG_DELETE_USER) VALUES ('%s','%s', '%s', '%s',0,0);",
+                          name.c_str(), login.c_str(), salt.c_str(), password_hash.c_str());
     sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
     sqlite3_close(Db);
     return user;
@@ -94,3 +106,32 @@ User UserManagerSQL::set_user_approved (const std::string& login, int approved) 
     sqlite3_close(Db);
 }
 
+void UserManagerSQL::delete_user (const std::string &login) {
+    int rc;
+    sqlite3_open("data_base.db", &Db);
+    sql =  sqlite3_mprintf("UPDATE USER SET FLAG_DELETE_USER = 1 WHERE LOGIN = '%s';",login.c_str());
+    rc = sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cout << sqlite3_errmsg(Db);
+    }
+    sqlite3_close(Db);
+}
+
+void UserManagerSQL::recovery_user (const std::string &login) {
+    int rc;
+    sqlite3_open("data_base.db", &Db);
+    sql =  sqlite3_mprintf("UPDATE USER SET FLAG_DELETE_USER = 0 WHERE LOGIN = '%s';",login.c_str());
+    rc = sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cout << sqlite3_errmsg(Db);
+    }
+    sqlite3_close(Db);
+}
+
+int UserManagerSQL::check_status_user(const std::string &login) {
+    sqlite3_open("data_base.db", &Db);
+    sql =  sqlite3_mprintf("SELECT FLAG_DELETE_USER FROM USER WHERE LOGIN = '%s';",login.c_str());
+    sqlite3_exec(Db, sql, &UserManagerSQL::callback_delete, &user_status, nullptr);
+    sqlite3_close(Db);
+    return user_status;
+}

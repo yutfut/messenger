@@ -1,7 +1,6 @@
 #include <sqlite3.h>
 #include <iostream>
 #include <string>
-
 #include "../include/sql.h"
 
 int MessageManagerSQL::callback_vec(void *NotUsed, int argc, char **argv, char **azColName) {
@@ -49,21 +48,13 @@ idType MessageManagerSQL::callback_id(void *NotUsed, int argc, char **argv, char
 }
 
 std::vector<Message> MessageManagerSQL::get_messages(idType dialog_id, idType last_msg_id, idType limit) {
-    sqlite3_stmt* insert_stmt;
     int rc;
     sqlite3_open("data_base.db", &Db);
-    if (last_msg_id > limit) {
-        sql = sqlite3_mprintf("SELECT * FROM MESSAGE WHERE DIALOG_ID = %d  AND ID <= %d AND Id >= %d;",dialog_id,last_msg_id, last_msg_id - limit);
-        rc = sqlite3_exec(Db,sql, &MessageManagerSQL::callback_vec, &msg_vector, nullptr);
-        if (rc != SQLITE_OK) {
-            std::cout << sqlite3_errmsg(Db);
-        }
-    } else {;
-        sql = sqlite3_mprintf("SELECT * FROM MESSAGE WHERE DIALOG_ID = %d  AND ID B<= %d AND ID >= 0;",dialog_id,last_msg_id);
-        rc = sqlite3_exec(Db,sql, &MessageManagerSQL::callback_vec, &msg_vector, nullptr);
-        if (rc != SQLITE_OK) {
-            std::cout << sqlite3_errmsg(Db);
-        }
+    sql = sqlite3_mprintf("SELECT * FROM MESSAGE WHERE DIALOG_ID = %d AND ID <= %d AND "
+                          "FLAG_DELETE_MESSAGE <> 1 ORDER BY ID DESC LIMIT %d;",dialog_id,last_msg_id, limit);
+    rc = sqlite3_exec(Db,sql, &MessageManagerSQL::callback_vec, &msg_vector, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cout << sqlite3_errmsg(Db);
     }
     sqlite3_close(Db);
     return msg_vector;
@@ -72,8 +63,8 @@ std::vector<Message> MessageManagerSQL::get_messages(idType dialog_id, idType la
 Message MessageManagerSQL::post_message(const Message &message) {
     int rc;
     sqlite3_open("data_base.db", &Db);
-    sql = sqlite3_mprintf("INSERT INTO MESSAGE(SENDER_ID, DIALOG_ID, MESSAGE_TEXT, TIME) VALUES (%d,%d,'%s','%s')",message.sender_id,message.dialog_id,
-    message.text.c_str(),message.time.c_str());
+    sql = sqlite3_mprintf("INSERT INTO MESSAGE(SENDER_ID, DIALOG_ID, MESSAGE_TEXT, TIME,FLAG_DELETE_MESSAGE) "
+                          "VALUES (%d,%d,'%s','%s',0)",message.sender_id,message.dialog_id,message.text.c_str(),message.time.c_str());
     rc = sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK) {
         std::cout << sqlite3_errmsg(Db);
@@ -94,4 +85,19 @@ int MessageManagerSQL::get_message_id() {
     }
     sqlite3_close(Db);
     return the_last_message_id.last_msg_id;
+}
+
+
+void MessageManagerSQL::delete_messages(std::vector<Message> messages_id) {
+    int rc;
+    sqlite3_open("data_base.db", &Db);
+    for (unsigned int i = 0; i < messages_id.size(); ++i) {
+        sql = sqlite3_mprintf("UPDATE MESSAGE SET FLAG_DELETE_MESSAGE = 1 WHERE ID = %d", messages_id[i].id);
+        sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
+    }
+    sqlite3_close(Db);
+}
+
+void MessageManagerSQL::forward_messages (std::vector<Message> messages_id) {
+
 }

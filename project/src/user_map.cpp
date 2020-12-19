@@ -13,7 +13,7 @@ User UserManagerMap::get_user(const std::string &login) {
     return user;
 }
 
-User UserManagerMap::create_user(const std::string &name, const std::string &login) {
+User UserManagerMap::create_user(const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash) {
     User user = {id, name, login};
     id++;
     massive_users.push_back(user);

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-
 #include "../include/sql.h"
 
 int DialogManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColName) {
@@ -57,14 +56,8 @@ idType DialogManagerSQL::create_dlg(idType user_id, std::vector<idType> massive_
 
 int DialogManagerSQL::add_members(idType dialog_id, std::vector<idType> members_to_add) {
     int rc;
-    sqlite3_stmt * insert_stmt;
     sqlite3_open("data_base.db", &Db);
     for (unsigned int i = 0; i < members_to_add.size(); ++i) {
-        //sql = sqlite3_mprintf("INSERT INTO DIALOG_MEMBERS(DIALOG_ID, MEMBER_ID) VALUES (%d, %d)", dialog_id, members_to_add[i]);
-        /*sql = "INSERT INTO DIALOG_MEMBERS(DIALOG_ID, MEMBER_ID) VALUES (?, ?)";
-        sqlite3_prepare_v2(Db,sql,-1,&insert_stmt, nullptr);
-        sqlite3_bind_int(insert_stmt,1,dialog_id);
-        sqlite3_bind_int(insert_stmt,2,members_to_add[i]);*/
         rc = sqlite3_exec(Db,sql, &DialogManagerSQL::callback, &dlg_members, nullptr);
         if (rc != SQLITE_OK) {
             std::cout << sqlite3_errmsg(Db);
@@ -97,7 +90,6 @@ std::vector<Dialog> DialogManagerSQL::get_dialog (idType user_id, idType last_dl
 }
 
 int DialogManagerSQL::is_user_in_dlg(idType dialog_id, idType user_id) {
-    sqlite3_stmt* select_stmt;
     sqlite3_open("data_base.db", &Db);
     sql = sqlite3_mprintf("SELECT MEMBER_ID FROM DIALOG_MEMBERS WHERE DIALOG_ID = %d AND MEMBER_ID = %d;",dialog_id, user_id);
     sqlite3_exec(Db,sql,&DialogManagerSQL::callback_check, &check_result, nullptr);
@@ -106,13 +98,8 @@ int DialogManagerSQL::is_user_in_dlg(idType dialog_id, idType user_id) {
 }
 
 std::vector<idType> DialogManagerSQL::get_users_in_dlg(idType dialog_id) {
-    sqlite3_stmt* select_stmt;
     sqlite3_open("data_base.db", &Db);
     sql = sqlite3_mprintf("SELECT MEMBER_ID FROM DIALOG_MEMBERS WHERE DIALOG_id = %d;",dialog_id);
-    //sql = "SELECT MEMBER_ID FROM DIALOG_MEMBERS WHERE DIALOG_id = ? AND MEMBER_ID != ?;";
-    //sqlite3_prepare_v2(Db,sql,-1,&select_stmt, nullptr);
-    //sqlite3_bind_int(select_stmt,1,dialog_id);
-    //sqlite3_bind_int(select_stmt,2,user_id);
     sqlite3_exec(Db,sql,&DialogManagerSQL::callback, &dlg_members, nullptr);
     sqlite3_close(Db);
     return dlg_members;

@@ -8,7 +8,7 @@
 class UserManagerMap : public IUserManager {
 public:
     User get_user (const std::string& login) override;
-    User create_user (const std::string& name,const std::string& login) override;
+    User create_user (const std::string& name,const std::string& login, const std::string &salt, const std::string &password_hash) override;
 private:
     std::vector<User> massive_users;
     idType id = 0;

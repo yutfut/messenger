@@ -14,6 +14,9 @@ public:
     // регистрирует сообщение, вносит в бд
     virtual int get_message_id() = 0;
     // возвращает айди сообщения(последнего)
+    virtual void delete_messages(std::vector<Message> messages_id) = 0;
+    //удаление массива выбранных сообщений
+    virtual void forward_messages (std::vector<Message> messages_id) = 0;
 };
 
 class IUserManager {
@@ -22,9 +25,16 @@ public:
     // возвращает айди, имя и логин юзера по логину
     virtual User get_user (idType id) = 0;
     // возвращает айди, имя и логин юзера по айди
-    virtual User create_user (const std::string& name, const std::string& login) = 0;
+    virtual User create_user (const std::string& name, const std::string& login, const std::string &salt, const std::string &password_hash) = 0;
     //создает юзера, вносит в бд
     virtual User set_user_approved (const std::string& login, int approved) = 0;
+    // устанавливает значение полю
+    virtual void delete_user (const std::string &login) = 0;
+    // удаление юзера(установка статуса удален)
+    virtual void recovery_user (const std::string &login) = 0;
+    // изменение статуса на зарегистрирован
+    virtual int check_status_user (const std::string &login) = 0;
+    // проверка статуса юзера
 };
 
 class IDialogManager {
