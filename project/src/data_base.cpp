@@ -32,18 +32,26 @@ sqlite3* SQL::create_data_base() {
     sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
     sql = "DROP TABLE DIALOG_MEMBERS;";
     sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
+    sql = "DROP TABLE SAFETY;";
+    sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
 
     sql = "CREATE TABLE USER(" \
     "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
     "NAME VARCHAR(16)," \
     "LOGIN VARCHAR(32)," \
-    "SALT VARCHAR(32)," \
     "PASSWORD_HASH VARCHAR(32)," \
     "APPROVED INTEGER," \
     "APPROVE_CODE INTEGER DEFAULT 0," \
     "FLAG_DELETE_USER INTEGER DEFAULT 0);";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"USER", zErrMsg);
+
+    sql = "CREATE TABLE SAFETY(" \
+    "LOGIN VARCHAR(32)," \
+    "SALT VARCHAR(32)," \
+    "FOREIGN KEY(LOGIN) REFERENCES USER(LOGIN));";
+    rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
+    check(rc,"DIALOG", zErrMsg);
 
     sql = "CREATE TABLE DIALOG(" \
     "ID INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL);";

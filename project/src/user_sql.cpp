@@ -87,10 +87,17 @@ User UserManagerSQL::get_user(idType id) {
 }
 
 User UserManagerSQL::create_user(const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash) {
+    int rc;
     sqlite3_open("data_base.db", &Db);
-    sql = sqlite3_mprintf("INSERT INTO USER(NAME, LOGIN, SALT, PASSWORD_HASH, APPROVED, FLAG_DELETE_USER) VALUES ('%s','%s', '%s', '%s',0,0);",
+    sql = sqlite3_mprintf("INSERT INTO USER(NAME, LOGIN, PASSWORD_HASH, APPROVED, FLAG_DELETE_USER) VALUES ('%s','%s','%s',0,0);",
                           name.c_str(), login.c_str(), salt.c_str(), password_hash.c_str());
     sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
+    sql = sqlite3_mprintf("INSERT INTO SAFETY(LOGIN, SALT) VALUES ('%s','%s');",
+                          login.c_str(), salt.c_str());
+    rc = sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cout << sqlite3_errmsg(Db);
+    }
     sqlite3_close(Db);
     return user;
 }
