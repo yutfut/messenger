@@ -42,6 +42,7 @@ sqlite3* SQL::create_data_base() {
     "PASSWORD_HASH VARCHAR(32)," \
     "APPROVED INTEGER," \
     "APPROVE_CODE INTEGER DEFAULT 0," \
+    "RECOVERY_CODE INTEGER," \
     "FLAG_DELETE_USER INTEGER DEFAULT 0);";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"USER", zErrMsg);
@@ -57,8 +58,6 @@ sqlite3* SQL::create_data_base() {
     "ID INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL);";
     rc = sqlite3_exec(Db, sql, nullptr, nullptr, &zErrMsg);
     check(rc,"DIALOG", zErrMsg);
-
-    // СДЕЛАТЬ TIME ТИПА DEFAULT CURRENT_TIMESTAMP
 
     sql = "CREATE TABLE MESSAGE(" \
     "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," \

@@ -24,6 +24,8 @@ public:
     void delete_user (const std::string &login) override;
     void recovery_user (const std::string &login) override;
     int check_status_user (const std::string &login) override;
+    void set_recovery_code (const std::string &login, int recovery_code) override;
+    void set_password_hash (const std::string &login, std::string &password_hash) override;
 
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);
     static int callback_delete(void *NotUsed, int argc, char **argv, char **azColName);

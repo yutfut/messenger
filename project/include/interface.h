@@ -35,6 +35,10 @@ public:
     // изменение статуса на зарегистрирован
     virtual int check_status_user (const std::string &login) = 0;
     // проверка статуса юзера
+    virtual void set_recovery_code (const std::string &login, int recovery_code) = 0;
+    // устанавливает полю recovery_code значение
+    virtual void set_password_hash (const std::string &login, std::string &password_hash) = 0;
+    // устанавливает полю password_hash значение
 };
 
 class IDialogManager {

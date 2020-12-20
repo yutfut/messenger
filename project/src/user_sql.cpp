@@ -142,3 +142,17 @@ int UserManagerSQL::check_status_user(const std::string &login) {
     sqlite3_close(Db);
     return user_status;
 }
+
+void UserManagerSQL::set_recovery_code (const std::string &login, int recovery_code) {
+    sqlite3_open("data_base.db", &Db);
+    sql =  sqlite3_mprintf("UPDATE USER SET RECOVERY_CODE = %d WHERE LOGIN = '%s';",recovery_code,login.c_str());
+    sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
+    sqlite3_close(Db);
+}
+
+void UserManagerSQL::set_password_hash (const std::string &login, std::string &password_hash) {
+    sqlite3_open("data_base.db", &Db);
+    sql =  sqlite3_mprintf("UPDATE USER SET PASSWORD_HASH = %s WHERE LOGIN = '%s';",password_hash.c_str(),login.c_str());
+    sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
+    sqlite3_close(Db);
+}
