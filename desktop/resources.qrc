@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/chat">
+        <file>img/chat.png</file>
+        <file>img/main.webp</file>
+        <file>img/profile.png</file>
+        <file>img/smile.png</file>
+        <file>img/files.png</file>
+        <file>img/send.png</file>
+    </qresource>
+    <qresource prefix="/main_picture"/>
+</RCC>
