@@ -16,6 +16,7 @@ struct User {
     std::string password_hash;
     bool approved;
     int approve_code;
+    int flag_delete_ser;
 };
 
 struct Message {
