@@ -7,5 +7,6 @@ build-network-Desktop-Debug/
 build-QTcp_client-Desktop-Debug/
 authorization/sql.h
 authorization/structures.h
+authorization/interface.h
 authorization/user_sql.cpp
 authorization/main.cpp

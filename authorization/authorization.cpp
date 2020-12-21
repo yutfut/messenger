@@ -147,6 +147,8 @@ int authorization::recovery_user(QString login) {
         recovery_code += 100000;
     }
 
+    um.set_recovery_code(login.toStdString(), recovery_code);
+
     MimeText text;
     text.setText(QString("Your recovery code is: ") + recovery_code);
     message.addPart(&text);
@@ -183,6 +185,7 @@ int authorization::approve_recovery(QString login, int code, QString new_passwor
         QByteArray hashed_salted_password = QCryptographicHash::hash(
                     QCryptographicHash::hash(salted_password, QCryptographicHash::Sha256).toHex().append(user.salt.c_str()),
                     QCryptographicHash::Sha256).toHex();
+        um.set_password_hash(login.toStdString(), hashed_salted_password);
         um.recovery_user(login);
     }
 }
