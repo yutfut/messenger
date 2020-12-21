@@ -11,8 +11,8 @@ struct User {
     idType id;
     std::string name;
     std::string login;
-    std::string salt;
     std::string password_hash;
+    std::string salt;
     bool approved;
     int approve_code;
     int recovery_code;
@@ -35,6 +35,11 @@ struct Dialogue_members {
     idType id;
     idType  dialog_id;
     idType member_id;
+};
+
+struct Safety {
+    std::string login;
+    std::string salt;
 };
 
 #endif //PROJECT_STRUCTURES_H
