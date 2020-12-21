@@ -18,14 +18,14 @@ private:
 
 class DialogManagerMap : public IDialogManager {
 public:
-    std::vector<Dialog> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
+    std::vector<Dialogues> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
     idType create_dlg(idType user_id, std::vector<idType> massive_customers) override;
     int add_members(idType dialog_id, std::vector<idType> members_to_add) override;
     std::vector<idType>get_users_in_dlg(idType dialog_id) override;
     int is_user_in_dlg(idType dialog_id, idType user_id) override;
 private:
     std::vector<std::pair<idType, idType>> members_dlg_id;
-    std::vector<Dialog> massive_dlg;
+    std::vector<Dialogues> massive_dlg;
     idType dialog_id = 0;
 };
 

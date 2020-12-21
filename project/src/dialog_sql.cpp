@@ -14,8 +14,8 @@ int DialogManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azCo
 }
 
 int DialogManagerSQL::callback_vec(void *NotUsed, int argc, char **argv, char **azColName) {
-    Dialog dlg;
-    std::vector<Dialog> *dlg_vector = (std::vector<Dialog>*)NotUsed;
+    Dialogues dlg;
+    std::vector<Dialogues> *dlg_vector = (std::vector<Dialogues>*)NotUsed;
     for (int i = 0; i < argc; ++i) {;
         dlg.id = atoi(argv[i]);
         dlg_vector->push_back(dlg);
@@ -67,7 +67,7 @@ int DialogManagerSQL::add_members(idType dialog_id, std::vector<idType> members_
     return 0;
 }
 
-std::vector<Dialog> DialogManagerSQL::get_dialog (idType user_id, idType last_dlg_id, idType limit) {
+std::vector<Dialogues> DialogManagerSQL::get_dialog (idType user_id, idType last_dlg_id, idType limit) {
     int rc;
     sqlite3_open("data_base.db", &Db);
     if (last_dlg_id > limit) {

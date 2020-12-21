@@ -45,7 +45,7 @@ public:
 
     idType create_dlg (idType user_id, std::vector<idType> massive_customers) override;
     int add_members(idType dialog_id, std::vector<idType> members_to_add) override;
-    std::vector<Dialog> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
+    std::vector<Dialogues> get_dialog (idType user_id, idType last_dlg_id, idType limit) override;
     std::vector<idType> get_users_in_dlg(idType dialog_id) override;
     int is_user_in_dlg(idType dialog_id, idType user_id) override;
 
@@ -56,7 +56,7 @@ public:
 private:
     char *sql;
     std::vector<idType> dlg_members;
-    std::vector<Dialog> dlg_vector;
+    std::vector<Dialogues> dlg_vector;
     Idr id_result;
     int check_result;
 };

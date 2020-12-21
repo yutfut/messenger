@@ -43,7 +43,7 @@ public:
 
 class IDialogManager {
 public:
-    virtual std::vector<Dialog> get_dialog (idType user_id, idType last_dlg_id, idType limit) = 0;
+    virtual std::vector<Dialogues> get_dialog (idType user_id, idType last_dlg_id, idType limit) = 0;
     // возвращает список диалогов начиная с last_dlg_id, количество = limit
     virtual idType create_dlg (idType user_id, std::vector<idType> massive_customers) = 0;
     // создает диалог/групповой чат,сразу добавляет туда пользователей

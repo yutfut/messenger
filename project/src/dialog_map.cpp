@@ -41,8 +41,8 @@ int DialogManagerMap::is_user_in_dlg(idType dialog_id, idType user_id) {
     return isDialogID_existed - 1;
 }
 
-std::vector<Dialog> DialogManagerMap::get_dialog (idType user_id, idType last_dlg_id, idType limit) {
-    std::vector<Dialog> dialogues;
+std::vector<Dialogues> DialogManagerMap::get_dialog (idType user_id, idType last_dlg_id, idType limit) {
+    std::vector<Dialogues> dialogues;
     last_dlg_id = dialog_id;
     if (last_dlg_id <= limit) {
         for (unsigned int i = last_dlg_id; i >= 1; --i) {

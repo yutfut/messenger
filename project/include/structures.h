@@ -27,7 +27,7 @@ struct Message {
     timeType time;
 };
 
-struct Dialog {
+struct Dialogues {
     idType id;
 };
 
