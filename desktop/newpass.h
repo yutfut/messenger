@@ -2,7 +2,7 @@
 #define NEWPASS_H
 
 #include <QMainWindow>
-#include "dialog.h"
+#include "dialogs.h"
 
 namespace Ui {
 class Newpass;

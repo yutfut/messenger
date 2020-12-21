@@ -1,6 +1,6 @@
 #ifndef REGISTRATION_H
 #define REGISTRATION_H
-#include "dialog.h"
+#include "dialogs.h"
 
 #include <QMainWindow>
 

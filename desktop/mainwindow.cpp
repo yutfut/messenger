@@ -31,7 +31,7 @@ void MainWindow::on_pushButton_clicked()
         dlg_window = new Dialog(this);
         dlg_window->show();
     } else {
-        ui->statusbar->showMessage("Ошибка доступа попробуйте еще раз");
+        ui->statusbar->showMessage("Ошибка доступа.Попробуйте еще раз");
         QMessageBox::critical(this,"snjv", "not success!");
     }
 }

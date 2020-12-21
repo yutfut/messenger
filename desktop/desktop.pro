@@ -9,22 +9,24 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    dialog.cpp \
+    dialogs.cpp \
     main.cpp \
     mainwindow.cpp \
     newpass.cpp \
     recovery.cpp \
-    registration.cpp
+    registration.cpp \
+    verticalbox.cpp
 
 HEADERS += \
-    dialog.h \
+    dialogs.h \
     mainwindow.h \
     newpass.h \
     recovery.h \
-    registration.h
+    registration.h \
+    verticalbox.h
 
 FORMS += \
-    dialog.ui \
+    dialogs.ui \
     mainwindow.ui \
     newpass.ui \
     recovery.ui \

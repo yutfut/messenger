@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "dialog.h"
+#include "dialogs.h"
 #include "registration.h"
 #include "recovery.h"
 
