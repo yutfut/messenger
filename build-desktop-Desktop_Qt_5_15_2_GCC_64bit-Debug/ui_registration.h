@@ -11,7 +11,6 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -49,9 +48,9 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_5;
     QLineEdit *pass_control;
-    QCheckBox *checkBox;
-    QPushButton *pushButton;
     QLabel *label_9;
+    QPushButton *send_code;
+    QPushButton *end_reg;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -64,7 +63,8 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         label = new QLabel(centralwidget);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(60, 10, 201, 61));
+        label->setGeometry(QRect(60, 10, 221, 61));
+        label->setStyleSheet(QString::fromUtf8("font-size:20px"));
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setGeometry(QRect(30, 410, 531, 17));
@@ -84,6 +84,7 @@ public:
 
         code_from_letter = new QLineEdit(layoutWidget);
         code_from_letter->setObjectName(QString::fromUtf8("code_from_letter"));
+        code_from_letter->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout_5->addWidget(code_from_letter);
 
@@ -102,6 +103,7 @@ public:
 
         user_name = new QLineEdit(layoutWidget1);
         user_name->setObjectName(QString::fromUtf8("user_name"));
+        user_name->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout->addWidget(user_name);
 
@@ -117,6 +119,7 @@ public:
 
         login = new QLineEdit(layoutWidget1);
         login->setObjectName(QString::fromUtf8("login"));
+        login->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout_2->addWidget(login);
 
@@ -132,6 +135,7 @@ public:
 
         pass = new QLineEdit(layoutWidget1);
         pass->setObjectName(QString::fromUtf8("pass"));
+        pass->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout_3->addWidget(pass);
 
@@ -147,21 +151,22 @@ public:
 
         pass_control = new QLineEdit(layoutWidget1);
         pass_control->setObjectName(QString::fromUtf8("pass_control"));
+        pass_control->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout_4->addWidget(pass_control);
 
 
         verticalLayout->addLayout(horizontalLayout_4);
 
-        checkBox = new QCheckBox(centralwidget);
-        checkBox->setObjectName(QString::fromUtf8("checkBox"));
-        checkBox->setGeometry(QRect(90, 300, 131, 23));
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(220, 500, 231, 25));
         label_9 = new QLabel(centralwidget);
         label_9->setObjectName(QString::fromUtf8("label_9"));
         label_9->setGeometry(QRect(100, 450, 481, 17));
+        send_code = new QPushButton(centralwidget);
+        send_code->setObjectName(QString::fromUtf8("send_code"));
+        send_code->setGeometry(QRect(180, 300, 161, 25));
+        end_reg = new QPushButton(centralwidget);
+        end_reg->setObjectName(QString::fromUtf8("end_reg"));
+        end_reg->setGeometry(QRect(240, 480, 241, 25));
         Registration->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Registration);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -169,6 +174,7 @@ public:
         Registration->setMenuBar(menubar);
         statusbar = new QStatusBar(Registration);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
+        statusbar->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
         Registration->setStatusBar(statusbar);
 
         retranslateUi(Registration);
@@ -187,9 +193,9 @@ public:
         label_3->setText(QCoreApplication::translate("Registration", "\320\233\320\276\320\263\320\270\320\275", nullptr));
         label_4->setText(QCoreApplication::translate("Registration", "\320\237\320\260\321\200\320\276\320\273\321\214", nullptr));
         label_5->setText(QCoreApplication::translate("Registration", "\320\237\320\276\320\262\321\202\320\276\321\200\320\270\321\202\320\265 \320\277\320\260\321\200\320\276\320\273\321\214", nullptr));
-        checkBox->setText(QCoreApplication::translate("Registration", "Agree with rules", nullptr));
-        pushButton->setText(QCoreApplication::translate("Registration", "\320\227\320\260\320\272\320\276\320\275\321\207\320\270\321\202\321\214 \321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\260\321\206\320\270\321\216", nullptr));
         label_9->setText(QCoreApplication::translate("Registration", "\320\224\320\273\321\217 \320\267\320\260\320\262\320\265\321\200\321\210\320\265\320\275\320\270\321\217 \321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\260\321\206\320\270\320\270 \320\275\320\260\320\266\320\274\320\270\321\202\320\265 \"\320\227\320\260\320\272\320\276\320\275\321\207\320\270\321\202\321\214 \321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\260\321\206\320\270\321\216\"", nullptr));
+        send_code->setText(QCoreApplication::translate("Registration", "\320\236\321\202\320\277\321\200\320\260\320\262\320\270\321\202\321\214 \320\272\320\276\320\264", nullptr));
+        end_reg->setText(QCoreApplication::translate("Registration", "\320\227\320\260\320\272\320\276\320\275\321\207\320\270\321\202\321\214 \321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\260\321\206\320\270\321\216", nullptr));
     } // retranslateUi
 
 };

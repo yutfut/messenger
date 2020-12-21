@@ -42,3 +42,34 @@ void MainWindow::on_pushButton_2_clicked()
     reg_window = new Registration(this);
     reg_window->show();
 }
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    hide();
+    rec_window_1 = new Recovery(this);
+    rec_window_1->show();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

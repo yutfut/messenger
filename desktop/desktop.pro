@@ -12,16 +12,22 @@ SOURCES += \
     dialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    newpass.cpp \
+    recovery.cpp \
     registration.cpp
 
 HEADERS += \
     dialog.h \
     mainwindow.h \
+    newpass.h \
+    recovery.h \
     registration.h
 
 FORMS += \
     dialog.ui \
     mainwindow.ui \
+    newpass.ui \
+    recovery.ui \
     registration.ui
 
 # Default rules for deployment.

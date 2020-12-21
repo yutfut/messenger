@@ -10,12 +10,14 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
@@ -45,6 +47,7 @@ public:
     QLabel *label_5;
     QLabel *main_picture;
     QMenuBar *menubar;
+    QMenu *menuWelcome_to_Messanger;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -79,6 +82,7 @@ public:
 
         login = new QLineEdit(layoutWidget);
         login->setObjectName(QString::fromUtf8("login"));
+        login->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout->addWidget(login);
 
@@ -94,6 +98,7 @@ public:
 
         password = new QLineEdit(layoutWidget);
         password->setObjectName(QString::fromUtf8("password"));
+        password->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
 
         horizontalLayout_2->addWidget(password);
 
@@ -119,10 +124,14 @@ public:
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setGeometry(QRect(0, 0, 800, 22));
+        menuWelcome_to_Messanger = new QMenu(menubar);
+        menuWelcome_to_Messanger->setObjectName(QString::fromUtf8("menuWelcome_to_Messanger"));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
         MainWindow->setStatusBar(statusbar);
+
+        menubar->addAction(menuWelcome_to_Messanger->menuAction());
 
         retranslateUi(MainWindow);
 
@@ -143,6 +152,7 @@ public:
         pushButton_3->setText(QCoreApplication::translate("MainWindow", "\320\222\320\276\321\201\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214 \320\264\320\276\321\201\321\202\321\203\320\277", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "\320\225\321\211\321\221 \320\275\320\265 \320\267\320\260\321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\270\321\200\320\276\320\262\320\260\320\275\321\213?", nullptr));
         main_picture->setText(QString());
+        menuWelcome_to_Messanger->setTitle(QCoreApplication::translate("MainWindow", "Welcome to Messanger!", nullptr));
     } // retranslateUi
 
 };

@@ -21,6 +21,12 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
+    void on_send_code_clicked();
+
+    void on_end_reg_clicked();
+
 private:
     Ui::Registration *ui;
     Dialog *dlg_window;

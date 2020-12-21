@@ -6,6 +6,7 @@
         <file>img/smile.png</file>
         <file>img/files.png</file>
         <file>img/send.png</file>
+        <file>img/create_dlg.png</file>
     </qresource>
     <qresource prefix="/main_picture"/>
 </RCC>
