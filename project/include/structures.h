@@ -6,6 +6,7 @@
 
 typedef int idType;
 typedef std::string timeType;
+typedef std::string dataType;
 
 struct User {
     idType id;
@@ -24,6 +25,7 @@ struct Message {
     idType sender_id;
     idType dialog_id;
     std::string text;
+    dataType data;
     timeType time;
 };
 

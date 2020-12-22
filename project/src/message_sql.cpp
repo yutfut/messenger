@@ -7,14 +7,16 @@ int MessageManagerSQL::callback_vec(void *NotUsed, int argc, char **argv, char *
     std::vector<Message> *msg = (std::vector<Message>*)NotUsed;
     Message mes;
     for (int i = 0; i < argc; ++i) {
-        if (i % 5 == 0) {
+        if (i % 6 == 0) {
             mes.id = atoi(argv[i]);
-        } else if (i % 5 == 1) {
+        } else if (i % 6 == 1) {
             mes.sender_id = atoi(argv[i]);
-        } else if (i % 5 == 2) {
+        } else if (i % 6 == 2) {
             mes.dialog_id = atoi(argv[i]);
-        } else if (i % 5 == 3) {
+        } else if (i % 6 == 3) {
             mes.text = argv[i];
+        } else if (i % 6 == 4) {
+            mes.data = argv[i];
         } else {
             mes.time = argv[i];
             msg->push_back(mes);
@@ -34,6 +36,8 @@ int MessageManagerSQL::callback_mes(void *NotUsed, int argc, char **argv, char *
             msg->dialog_id = atoi(argv[i]);
         } else if (i == 3) {
             msg->text = argv[i];
+        } else if (i == 4) {
+            msg->data = argv[i];
         } else {
             msg->time = argv[i];
         }
@@ -63,8 +67,9 @@ std::vector<Message> MessageManagerSQL::get_messages(idType dialog_id, idType la
 Message MessageManagerSQL::post_message(const Message &message) {
     int rc;
     sqlite3_open("data_base.db", &Db);
-    sql = sqlite3_mprintf("INSERT INTO MESSAGE(SENDER_ID, DIALOG_ID, MESSAGE_TEXT, TIME,FLAG_DELETE_MESSAGE) "
-                          "VALUES (%d,%d,'%s','%s',0)",message.sender_id,message.dialog_id,message.text.c_str(),message.time.c_str());
+    sql = sqlite3_mprintf("INSERT INTO MESSAGE(SENDER_ID, DIALOG_ID, MESSAGE_TEXT,DATA,TIME,FLAG_DELETE_MESSAGE) "
+                          "VALUES (%d,%d,'%s','%s','%s',0)",message.sender_id,message.dialog_id,
+                          message.text.c_str(),message.data.c_str(),message.time.c_str());
     rc = sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK) {
         std::cout << sqlite3_errmsg(Db);
