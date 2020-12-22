@@ -1,5 +1,5 @@
 #include "dialogs.h"
-#include "ui_dialog.h"
+#include "ui_dialogs.h"
 #include <QPixmap>
 #include <QStackedWidget>
 #include <QTime>
@@ -24,10 +24,10 @@ void Dialog::delete_input_zone() {
     ui->input->clear();
 }
 
-void Dialog::on_file_clicked()
+/*void Dialog::on_file_clicked()
 {
     return;
-}
+}*/
 
 void Dialog::on_send_button_clicked()
 {
@@ -53,4 +53,9 @@ void Dialog::on_file_button_clicked()
     ui->textBrowser->append(text);
     delete_input_zone();
     //dlg_client.addFile(proptocol,path);
+}
+
+void Dialog::on_add_group_dlg_clicked()
+{
+    vbox->add_dialog();
 }

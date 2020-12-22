@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     int w = ui->main_picture->width();
     int h = ui->main_picture->width();
     ui->main_picture->setPixmap(pix.scaled(w,h,Qt::KeepAspectRatio));
-
 }
 
 MainWindow::~MainWindow()

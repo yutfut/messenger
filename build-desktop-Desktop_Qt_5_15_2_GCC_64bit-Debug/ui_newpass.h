@@ -99,6 +99,7 @@ public:
         Newpass->setMenuBar(menubar);
         statusbar = new QStatusBar(Newpass);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
+        statusbar->setStyleSheet(QString::fromUtf8("background: rgb(238, 238, 236);"));
         Newpass->setStatusBar(statusbar);
 
         retranslateUi(Newpass);

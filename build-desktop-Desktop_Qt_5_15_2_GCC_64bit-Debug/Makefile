@@ -52,25 +52,27 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../desktop/dialog.cpp \
+SOURCES       = ../desktop/dialogs.cpp \
 		../desktop/main.cpp \
 		../desktop/mainwindow.cpp \
 		../desktop/newpass.cpp \
 		../desktop/recovery.cpp \
-		../desktop/registration.cpp qrc_resources.cpp \
-		moc_dialog.cpp \
+		../desktop/registration.cpp \
+		../desktop/verticalbox.cpp qrc_resources.cpp \
+		moc_dialogs.cpp \
 		moc_mainwindow.cpp \
 		moc_newpass.cpp \
 		moc_recovery.cpp \
 		moc_registration.cpp
-OBJECTS       = dialog.o \
+OBJECTS       = dialogs.o \
 		main.o \
 		mainwindow.o \
 		newpass.o \
 		recovery.o \
 		registration.o \
+		verticalbox.o \
 		qrc_resources.o \
-		moc_dialog.o \
+		moc_dialogs.o \
 		moc_mainwindow.o \
 		moc_newpass.o \
 		moc_recovery.o \
@@ -252,16 +254,18 @@ DIST          = ../../../Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../Qt/5.15.2/gcc_64/mkspecs/features/exceptions.prf \
 		../../../Qt/5.15.2/gcc_64/mkspecs/features/yacc.prf \
 		../../../Qt/5.15.2/gcc_64/mkspecs/features/lex.prf \
-		../desktop/desktop.pro ../desktop/dialog.h \
+		../desktop/desktop.pro ../desktop/dialogs.h \
 		../desktop/mainwindow.h \
 		../desktop/newpass.h \
 		../desktop/recovery.h \
-		../desktop/registration.h ../desktop/dialog.cpp \
+		../desktop/registration.h \
+		../desktop/verticalbox.h ../desktop/dialogs.cpp \
 		../desktop/main.cpp \
 		../desktop/mainwindow.cpp \
 		../desktop/newpass.cpp \
 		../desktop/recovery.cpp \
-		../desktop/registration.cpp
+		../desktop/registration.cpp \
+		../desktop/verticalbox.cpp
 QMAKE_TARGET  = desktop
 DESTDIR       = 
 TARGET        = desktop
@@ -270,7 +274,7 @@ TARGET        = desktop
 first: all
 ####### Build rules
 
-desktop: ui_dialog.h ui_mainwindow.h ui_newpass.h ui_recovery.h ui_registration.h $(OBJECTS)  
+desktop: ui_dialogs.h ui_mainwindow.h ui_newpass.h ui_recovery.h ui_registration.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: ../desktop/desktop.pro ../../../Qt/5.15.2/gcc_64/mkspecs/linux-g++/qmake.conf ../../../Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
@@ -648,9 +652,9 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../desktop/resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../desktop/dialog.h ../desktop/mainwindow.h ../desktop/newpass.h ../desktop/recovery.h ../desktop/registration.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../desktop/dialog.cpp ../desktop/main.cpp ../desktop/mainwindow.cpp ../desktop/newpass.cpp ../desktop/recovery.cpp ../desktop/registration.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../desktop/dialog.ui ../desktop/mainwindow.ui ../desktop/newpass.ui ../desktop/recovery.ui ../desktop/registration.ui $(DISTDIR)/
+	$(COPY_FILE) --parents ../desktop/dialogs.h ../desktop/mainwindow.h ../desktop/newpass.h ../desktop/recovery.h ../desktop/registration.h ../desktop/verticalbox.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../desktop/dialogs.cpp ../desktop/main.cpp ../desktop/mainwindow.cpp ../desktop/newpass.cpp ../desktop/recovery.cpp ../desktop/registration.cpp ../desktop/verticalbox.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../desktop/dialogs.ui ../desktop/mainwindow.ui ../desktop/newpass.ui ../desktop/recovery.ui ../desktop/registration.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -684,7 +688,8 @@ qrc_resources.cpp: ../desktop/resources.qrc \
 		../desktop/img/files.png \
 		../desktop/img/send.png \
 		../desktop/img/chat.png \
-		../desktop/img/profile.png
+		../desktop/img/profile.png \
+		../desktop/img/create_dlg.png
 	/home/andrey/Qt/5.15.2/gcc_64/bin/rcc -name resources ../desktop/resources.qrc -o qrc_resources.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h
@@ -693,10 +698,10 @@ compiler_moc_predefs_clean:
 moc_predefs.h: ../../../Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -std=gnu++11 -Wall -Wextra -dM -E -o moc_predefs.h ../../../Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_dialog.cpp moc_mainwindow.cpp moc_newpass.cpp moc_recovery.cpp moc_registration.cpp
+compiler_moc_header_make_all: moc_dialogs.cpp moc_mainwindow.cpp moc_newpass.cpp moc_recovery.cpp moc_registration.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_dialog.cpp moc_mainwindow.cpp moc_newpass.cpp moc_recovery.cpp moc_registration.cpp
-moc_dialog.cpp: ../desktop/dialog.h \
+	-$(DEL_FILE) moc_dialogs.cpp moc_mainwindow.cpp moc_newpass.cpp moc_recovery.cpp moc_registration.cpp
+moc_dialogs.cpp: ../desktop/dialogs.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -803,9 +808,28 @@ moc_dialog.cpp: ../desktop/dialog.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		moc_predefs.h \
 		../../../Qt/5.15.2/gcc_64/bin/moc
-	/home/andrey/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/home/andrey/Рабочий стол/desktop/build-desktop-Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/andrey/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/home/andrey/Рабочий стол/desktop/desktop' -I/home/andrey/Qt/5.15.2/gcc_64/include -I/home/andrey/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/andrey/Qt/5.15.2/gcc_64/include/QtGui -I/home/andrey/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../desktop/dialog.h -o moc_dialog.cpp
+	/home/andrey/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/home/andrey/Рабочий стол/desktop/build-desktop-Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/andrey/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/home/andrey/Рабочий стол/desktop/desktop' -I/home/andrey/Qt/5.15.2/gcc_64/include -I/home/andrey/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/andrey/Qt/5.15.2/gcc_64/include/QtGui -I/home/andrey/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../desktop/dialogs.h -o moc_dialogs.cpp
 
 moc_mainwindow.cpp: ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
@@ -914,7 +938,26 @@ moc_mainwindow.cpp: ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
-		../desktop/dialog.h \
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		../desktop/registration.h \
 		../desktop/recovery.h \
 		../desktop/newpass.h \
@@ -1029,6 +1072,26 @@ moc_newpass.cpp: ../desktop/newpass.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		moc_predefs.h \
 		../../../Qt/5.15.2/gcc_64/bin/moc
 	/home/andrey/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/home/andrey/Рабочий стол/desktop/build-desktop-Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/andrey/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/home/andrey/Рабочий стол/desktop/desktop' -I/home/andrey/Qt/5.15.2/gcc_64/include -I/home/andrey/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/andrey/Qt/5.15.2/gcc_64/include/QtGui -I/home/andrey/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../desktop/newpass.h -o moc_newpass.cpp
@@ -1141,12 +1204,32 @@ moc_recovery.cpp: ../desktop/recovery.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
 		../desktop/newpass.h \
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		moc_predefs.h \
 		../../../Qt/5.15.2/gcc_64/bin/moc
 	/home/andrey/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/home/andrey/Рабочий стол/desktop/build-desktop-Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/andrey/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/home/andrey/Рабочий стол/desktop/desktop' -I/home/andrey/Qt/5.15.2/gcc_64/include -I/home/andrey/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/andrey/Qt/5.15.2/gcc_64/include/QtGui -I/home/andrey/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../desktop/recovery.h -o moc_recovery.cpp
 
 moc_registration.cpp: ../desktop/registration.h \
-		../desktop/dialog.h \
+		../desktop/dialogs.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -1253,6 +1336,25 @@ moc_registration.cpp: ../desktop/registration.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		moc_predefs.h \
 		../../../Qt/5.15.2/gcc_64/bin/moc
 	/home/andrey/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/home/andrey/Рабочий стол/desktop/build-desktop-Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/andrey/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/home/andrey/Рабочий стол/desktop/desktop' -I/home/andrey/Qt/5.15.2/gcc_64/include -I/home/andrey/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/andrey/Qt/5.15.2/gcc_64/include/QtGui -I/home/andrey/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../desktop/registration.h -o moc_registration.cpp
@@ -1261,12 +1363,12 @@ compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_dialog.h ui_mainwindow.h ui_newpass.h ui_recovery.h ui_registration.h
+compiler_uic_make_all: ui_dialogs.h ui_mainwindow.h ui_newpass.h ui_recovery.h ui_registration.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_dialog.h ui_mainwindow.h ui_newpass.h ui_recovery.h ui_registration.h
-ui_dialog.h: ../desktop/dialog.ui \
+	-$(DEL_FILE) ui_dialogs.h ui_mainwindow.h ui_newpass.h ui_recovery.h ui_registration.h
+ui_dialogs.h: ../desktop/dialogs.ui \
 		../../../Qt/5.15.2/gcc_64/bin/uic
-	/home/andrey/Qt/5.15.2/gcc_64/bin/uic ../desktop/dialog.ui -o ui_dialog.h
+	/home/andrey/Qt/5.15.2/gcc_64/bin/uic ../desktop/dialogs.ui -o ui_dialogs.h
 
 ui_mainwindow.h: ../desktop/mainwindow.ui \
 		../../../Qt/5.15.2/gcc_64/bin/uic
@@ -1294,7 +1396,7 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 
 ####### Compile
 
-dialog.o: ../desktop/dialog.cpp ../desktop/dialog.h \
+dialogs.o: ../desktop/dialogs.cpp ../desktop/dialogs.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -1401,7 +1503,26 @@ dialog.o: ../desktop/dialog.cpp ../desktop/dialog.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
-		ui_dialog.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
+		ui_dialogs.h \
 		../../../Qt/5.15.2/gcc_64/include/QtCore/QVariant \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
@@ -1411,20 +1532,9 @@ dialog.o: ../desktop/dialog.cpp ../desktop/dialog.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QFrame \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QHBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
@@ -1432,9 +1542,6 @@ dialog.o: ../desktop/dialog.cpp ../desktop/dialog.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qactiongroup.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QPlainTextEdit \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qplaintextedit.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qabstracttextdocumentlayout.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextlayout.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qglyphrun.h \
@@ -1443,18 +1550,22 @@ dialog.o: ../desktop/dialog.cpp ../desktop/dialog.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qpushbutton.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStackedWidget \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstackedwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QToolBar \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtoolbar.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/QPixmap
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o ../desktop/dialog.cpp
+		../../../Qt/5.15.2/gcc_64/include/QtGui/QPixmap \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStackedWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstackedwidget.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/QTime \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QFileDialog \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qfiledialog.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/QDesktopServices \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qdesktopservices.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstandardpaths.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialogs.o ../desktop/dialogs.cpp
 
 main.o: ../desktop/main.cpp ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
@@ -1563,7 +1674,26 @@ main.o: ../desktop/main.cpp ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
-		../desktop/dialog.h \
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		../desktop/registration.h \
 		../desktop/recovery.h \
 		../desktop/newpass.h \
@@ -1683,7 +1813,26 @@ mainwindow.o: ../desktop/mainwindow.cpp ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
-		../desktop/dialog.h \
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		../desktop/registration.h \
 		../desktop/recovery.h \
 		../desktop/newpass.h \
@@ -1701,20 +1850,9 @@ mainwindow.o: ../desktop/mainwindow.cpp ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QGroupBox \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgroupbox.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QHBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenu \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
@@ -1724,8 +1862,6 @@ mainwindow.o: ../desktop/mainwindow.cpp ../desktop/mainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
@@ -1839,7 +1975,51 @@ newpass.o: ../desktop/newpass.cpp ../desktop/newpass.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
-		ui_newpass.h
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
+		ui_newpass.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/QVariant \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qeventloop.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QHBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qaction.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qactiongroup.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QPushButton \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o newpass.o ../desktop/newpass.cpp
 
 recovery.o: ../desktop/recovery.cpp ../desktop/recovery.h \
@@ -1950,11 +2130,28 @@ recovery.o: ../desktop/recovery.cpp ../desktop/recovery.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
 		../desktop/newpass.h \
+		../desktop/dialogs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		ui_recovery.h \
 		../../../Qt/5.15.2/gcc_64/include/QtCore/QVariant \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QAction \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qaction.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qactiongroup.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
 		../../../Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1963,33 +2160,25 @@ recovery.o: ../desktop/recovery.cpp ../desktop/recovery.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QHBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenu \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qaction.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qactiongroup.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qpushbutton.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o recovery.o ../desktop/recovery.cpp
 
 registration.o: ../desktop/registration.cpp ../desktop/registration.h \
-		../desktop/dialog.h \
+		../desktop/dialogs.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmainwindow.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -2096,6 +2285,25 @@ registration.o: ../desktop/registration.cpp ../desktop/registration.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
 		ui_registration.h \
 		../../../Qt/5.15.2/gcc_64/include/QtCore/QVariant \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
@@ -2105,23 +2313,9 @@ registration.o: ../desktop/registration.cpp ../desktop/registration.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
 		../../../Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QHBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
-		../../../Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
@@ -2129,21 +2323,136 @@ registration.o: ../desktop/registration.cpp ../desktop/registration.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qactiongroup.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QPushButton \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qpushbutton.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
-		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QAbstractButton
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o registration.o ../desktop/registration.cpp
 
+verticalbox.o: ../desktop/verticalbox.cpp ../desktop/verticalbox.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QWidget \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qwidget.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtguiglobal.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qflags.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qmutex.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qnumeric.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qversiontagging.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtgui-config.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qnamespace.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs_win.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qchar.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstringliteral.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstringview.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qpair.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qvector.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qpoint.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qmargins.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpaintdevice.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qrect.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qsize.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpalette.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qcolor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qrgb.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qrgba64.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qbrush.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qmatrix.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpolygon.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qregion.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qdatastream.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qline.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtransform.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qimage.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpixelformat.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qpixmap.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qhash.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qfont.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qfontmetrics.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qfontinfo.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qsizepolicy.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qcursor.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qkeysequence.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qevent.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qset.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qfile.h \
+		../../../Qt/5.15.2/gcc_64/include/QtCore/qfiledevice.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qvector2d.h \
+		../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
+		../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o verticalbox.o ../desktop/verticalbox.cpp
+
 qrc_resources.o: qrc_resources.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_resources.o qrc_resources.cpp
 
-moc_dialog.o: moc_dialog.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dialog.o moc_dialog.cpp
+moc_dialogs.o: moc_dialogs.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dialogs.o moc_dialogs.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

@@ -85,9 +85,9 @@ void Registration::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         auto *_t = static_cast<Registration *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        //case 0: _t->on_checkBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        //case 1: _t->on_pushButton_clicked(); break;
-        //case 2: _t->on_pushButton_2_clicked(); break;
+        /*case 0: _t->on_checkBox_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: _t->on_pushButton_clicked(); break;
+        case 2: _t->on_pushButton_2_clicked(); break;*/
         case 3: _t->on_send_code_clicked(); break;
         case 4: _t->on_end_reg_clicked(); break;
         default: ;

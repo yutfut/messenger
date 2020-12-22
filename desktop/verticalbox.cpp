@@ -7,14 +7,9 @@ VerticalBox::VerticalBox(QWidget * parent): QWidget(parent)
 }
 
 void VerticalBox::add_dialog() {
-      QLabel *label = new QLabel("*Andrey  dretry...", this);
-      /*settings->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+      QLabel *label = new QLabel("settings", this);
+      label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-      vbox->addWidget(settings);
-      vbox->addWidget(accounts);
-      vbox->addWidget(loans);
-      vbox->addWidget(cash);
-      vbox->addWidget(debts);
-
-      setLayout(vbox);*/
+      vbox->addWidget(label);
+      setLayout(vbox);
 }

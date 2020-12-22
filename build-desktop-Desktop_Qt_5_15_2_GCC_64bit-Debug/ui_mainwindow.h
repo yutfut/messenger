@@ -46,6 +46,7 @@ public:
     QPushButton *pushButton_3;
     QLabel *label_5;
     QLabel *main_picture;
+    QLabel *label_4;
     QMenuBar *menubar;
     QMenu *menuWelcome_to_Messanger;
     QStatusBar *statusbar;
@@ -119,7 +120,12 @@ public:
         label_5->setGeometry(QRect(530, 260, 201, 17));
         main_picture = new QLabel(centralwidget);
         main_picture->setObjectName(QString::fromUtf8("main_picture"));
-        main_picture->setGeometry(QRect(20, 0, 471, 391));
+        main_picture->setGeometry(QRect(0, 0, 471, 391));
+        main_picture->setStyleSheet(QString::fromUtf8(""));
+        label_4 = new QLabel(centralwidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setGeometry(QRect(190, 20, 581, 31));
+        label_4->setStyleSheet(QString::fromUtf8("font-size: 25px"));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -152,6 +158,7 @@ public:
         pushButton_3->setText(QCoreApplication::translate("MainWindow", "\320\222\320\276\321\201\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214 \320\264\320\276\321\201\321\202\321\203\320\277", nullptr));
         label_5->setText(QCoreApplication::translate("MainWindow", "\320\225\321\211\321\221 \320\275\320\265 \320\267\320\260\321\200\320\265\320\263\320\270\321\201\321\202\321\200\320\270\321\200\320\276\320\262\320\260\320\275\321\213?", nullptr));
         main_picture->setText(QString());
+        label_4->setText(QCoreApplication::translate("MainWindow", "WELCOME TO BM_MESSANGER!", nullptr));
         menuWelcome_to_Messanger->setTitle(QCoreApplication::translate("MainWindow", "Welcome to Messanger!", nullptr));
     } // retranslateUi
 
