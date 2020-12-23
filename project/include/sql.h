@@ -19,7 +19,7 @@ public:
     UserManagerSQL();
     User get_user (const std::string& login1) override;
     User get_user (idType id) override;
-    User create_user (const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash) override;
+    User create_user (const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash, int approve_code) override;
     User set_user_approved (const std::string& login, int approved) override;
     void delete_user (const std::string &login) override;
     void recovery_user (const std::string &login) override;
@@ -75,7 +75,6 @@ public:
     std::vector<Message> get_messages (idType dialog_id, idType last_msg_id, idType limit) override;
     int get_message_id() override;
     void delete_messages(std::vector<Message> messages_id) override;
-    void forward_messages (std::vector<Message> messages_id) override;
 
     static int callback_vec(void *NotUsed, int argc, char **argv, char **azColName);
     static idType callback_id(void *NotUsed, int argc, char **argv, char **azColName);

@@ -28,10 +28,10 @@ int UserManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColN
                 user->login = argv[i];
                 break;
             case 3:
-                user->salt = argv[i];
+                user->password_hash = argv[i];
                 break;
             case 4:
-                user->password_hash = argv[i];
+                user->salt = argv[i];
                 break;
             case 5:
                 user->approved = atoi(argv[i]);
@@ -83,12 +83,13 @@ User UserManagerSQL::get_user(idType id) {
     return user;
 }
 
-User UserManagerSQL::create_user(const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash) {
+User UserManagerSQL::create_user(const std::string &name, const std::string &login, const std::string &salt, const std::string &password_hash,
+                                 int approve_code) {
     int rc;
     sqlite3_open("data_base.db", &Db);
     sql = sqlite3_mprintf("INSERT INTO USER(NAME, LOGIN, PASSWORD_HASH, RECOVERY_CODE,APPROVE_CODE,APPROVED,"
-                          "FLAG_DELETE_USER) VALUES ('%s','%s','%s',0,0,0,0);",
-                          name.c_str(), login.c_str(), password_hash.c_str(),0,0,0);
+                          "FLAG_DELETE_USER) VALUES ('%s','%s','%s',0,%d,0,0);",
+                          name.c_str(), login.c_str(), password_hash.c_str(),approve_code);
     sqlite3_exec(Db,sql, nullptr, nullptr, nullptr);
     sql = sqlite3_mprintf("INSERT INTO SAFETY(LOGIN, SALT) VALUES ('%s','%s');",
                           login.c_str(), salt.c_str());

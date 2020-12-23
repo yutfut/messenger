@@ -102,7 +102,3 @@ void MessageManagerSQL::delete_messages(std::vector<Message> messages_id) {
     }
     sqlite3_close(Db);
 }
-
-void MessageManagerSQL::forward_messages (std::vector<Message> messages_id) {
-
-}
