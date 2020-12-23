@@ -31,15 +31,12 @@ int UserManagerSQL::callback(void *NotUsed, int argc, char **argv, char **azColN
                 user->password_hash = argv[i];
                 break;
             case 4:
-                user->salt = argv[i];
-                break;
-            case 5:
                 user->approved = atoi(argv[i]);
                 break;
-            case 6:
+            case 5:
                 user->approve_code = atoi(argv[i]);
                 break;
-            case 7:
+            case 6:
                 user->flag_delete_ser = atoi(argv[i]);
                 break;
         }
@@ -57,6 +54,12 @@ int UserManagerSQL::callback_delete(void *NotUsed, int argc, char **argv, char *
     } else {
         *user_status = USER_NOT_FOUND;
     }
+}
+
+int UserManagerSQL::callback_saf(void *NotUsed, int argc, char **argv, char **azColName) {
+    int i;
+    Safety *saf = (Safety*) NotUsed;
+    saf->salt = argv[0];
 }
 
 User UserManagerSQL::get_user(const std::string &login1) {
@@ -154,4 +157,12 @@ void UserManagerSQL::set_password_hash (const std::string &login, std::string &p
     sql =  sqlite3_mprintf("UPDATE USER SET PASSWORD_HASH = %s WHERE LOGIN = '%s';",password_hash.c_str(),login.c_str());
     sqlite3_exec(Db, sql, nullptr, nullptr, nullptr);
     sqlite3_close(Db);
+}
+
+std::string UserManagerSQL::get_salt(const std::string &login) {
+    sqlite3_open("data_base.db", &Db);
+    sql =  sqlite3_mprintf("SELECT SALT FROM SAFETY WHERE LOGIN = '%s';",login.c_str());
+    sqlite3_exec(Db, sql, &UserManagerSQL::callback_saf, &saf, nullptr);
+    sqlite3_close(Db);
+    return saf.salt;
 }

@@ -38,6 +38,7 @@ public:
     // устанавливает полю recovery_code значение
     virtual void set_password_hash (const std::string &login, std::string &password_hash) = 0;
     // устанавливает полю password_hash значение
+    virtual std::string get_salt(const std::string &login) = 0;
 };
 
 class IDialogManager {

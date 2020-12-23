@@ -49,6 +49,7 @@ idType DialogManagerSQL::create_dlg(idType user_id, std::vector<idType> massive_
     if (rc != SQLITE_OK) {
         std::cout << sqlite3_errmsg(Db);
     }
+    massive_customers.push_back(user_id);
     DialogManagerSQL::add_members(id_result.id,massive_customers);
     sqlite3_close(Db);
     return id_result.id;
@@ -58,6 +59,7 @@ int DialogManagerSQL::add_members(idType dialog_id, std::vector<idType> members_
     int rc;
     sqlite3_open("data_base.db", &Db);
     for (unsigned int i = 0; i < members_to_add.size(); ++i) {
+        sql = sqlite3_mprintf("INSERT INTO DIALOG_MEMBERS(DIALOG_ID,MEMBER_ID) VALUES (%d,%d);",dialog_id, members_to_add[i]);
         rc = sqlite3_exec(Db,sql, &DialogManagerSQL::callback, &dlg_members, nullptr);
         if (rc != SQLITE_OK) {
             std::cout << sqlite3_errmsg(Db);

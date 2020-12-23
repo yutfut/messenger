@@ -13,7 +13,6 @@ struct User {
     std::string name;
     std::string login;
     std::string password_hash;
-    std::string salt;
     bool approved;
     int approve_code;
     int recovery_code;

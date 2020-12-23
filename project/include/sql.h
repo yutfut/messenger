@@ -26,13 +26,16 @@ public:
     int check_status_user (const std::string &login) override;
     void set_recovery_code (const std::string &login, int recovery_code) override;
     void set_password_hash (const std::string &login, std::string &password_hash) override;
+    std::string get_salt(const std::string &login) override;
 
     static int callback(void *NotUsed, int argc, char **argv, char **azColName);
     static int callback_delete(void *NotUsed, int argc, char **argv, char **azColName);
+    static int callback_saf(void *NotUsed, int argc, char **argv, char **azColName);
 private:
     const char *sql;
     User user;
     int user_status;
+    Safety saf;
 };
 
 // DIALOGUES
